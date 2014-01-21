@@ -1,6 +1,7 @@
 package com.example.gftranning;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Random;
 
 import android.app.Activity;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +23,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 
     private ImageView mImageView;
     private View mImageAnswerView;
+    private TextView mImageArrayText;
     private Button mImageMatchButton;
     private Button mAudioMatchButton;
     private Handler mHandler;
@@ -39,10 +42,13 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     private static final int MSG_HIDE_IMAGE_ANSWER = 4;
     private static final int MSG_SET_DISTANCE = 5; // arg1 for distance 
     private static final int MSG_IMAGE_WAIT_PRESS_END = 6;
+    private static final int MSG_SHOW_IMAGE_ANSWER_TEXT = 7;
+    private static final int MSG_HIDE_IMAGE_ANSWER_TEXT = 8;
 
     private static final int ANSWER_SHOW_TIME_LENGTH = 800;
     private static final long SHOW_TIME_LENGTH = 500;
     private static final long WAIT_PRESS_LENGTH = 2500;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.image);
         mDistanceText = (TextView) findViewById(R.id.distance_text);
+        mImageArrayText = (TextView) findViewById(R.id.image_array_text);
         mImageAnswerView = findViewById(R.id.answer_image);
         mImageMatchButton = (Button) findViewById(R.id.image_matched);
         mAudioMatchButton = (Button) findViewById(R.id.audio_matched);
@@ -77,7 +84,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         case MSG_SHOW_IMAGE:
             int next = mRandom.nextInt(8);
             mImageDeque.addLast(next);
-            while (mImageDeque.size() > mDistance) {
+            while (mImageDeque.size() > mDistance + 1) {
                 mImageDeque.removeFirst();
             }
             int resId = getResources()
@@ -93,7 +100,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             break;
         case MSG_IMAGE_WAIT_PRESS_END:
             if (!mImageUserHasPressed) {
-                if (mImageDeque.size() == mDistance) {
+                if (mImageDeque.size() == (mDistance + 1) && mImageDeque.getFirst() == mImageDeque.getLast()) {
                     Message answerMsg = mHandler.obtainMessage(MSG_SHOW_IMAGE_ANSWER);
                     if ((mImageDeque.getFirst() == mImageDeque.getLast())) {
                         mErrorCount++;
@@ -112,9 +119,17 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             mImageAnswerView.setBackgroundColor(msg.arg1 == 1 ? Color.GREEN : Color.RED);
             mImageAnswerView.setVisibility(View.VISIBLE);
             mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE_ANSWER, ANSWER_SHOW_TIME_LENGTH);
+            mHandler.sendEmptyMessage(MSG_SHOW_IMAGE_ANSWER_TEXT);
             break;
         case MSG_HIDE_IMAGE_ANSWER:
             mImageAnswerView.setVisibility(View.INVISIBLE);
+            break;
+        case MSG_SHOW_IMAGE_ANSWER_TEXT:
+            mImageArrayText.setText(Arrays.toString(mImageDeque.toArray()));
+            mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE_ANSWER_TEXT, 1000);
+            break;
+        case MSG_HIDE_IMAGE_ANSWER_TEXT:
+            mImageArrayText.setText("");
             break;
         default:
             return false;
@@ -128,8 +143,11 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             if (mImageUserHasPressed) {
                 return;
             }
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "mImageDeque is :" + Arrays.toString(mImageDeque.toArray()));
+            }
             mImageUserHasPressed = true;
-            if (mImageDeque.size() != mDistance || (mImageDeque.getFirst() != mImageDeque.getLast())) {
+            if (mImageDeque.size() != (mDistance + 1) || (mImageDeque.getFirst() != mImageDeque.getLast())) {
                 mErrorCount++;
                 mHandler.obtainMessage(MSG_SHOW_IMAGE_ANSWER, 0, 0).sendToTarget();
             } else {
