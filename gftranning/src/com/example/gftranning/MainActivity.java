@@ -2,6 +2,7 @@ package com.example.gftranning;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 
 import android.app.Activity;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements Callback, OnClickListener {
-
+    private static final boolean DEBUG = BuildConfig.DEBUG && true;
     private ImageView mImageView;
     private View mImageAnswerView;
     private TextView mImageArrayText;
@@ -30,9 +31,10 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     private ArrayDeque<Integer> mImageDeque = new ArrayDeque<Integer>();
     private Random mRandom = new Random();
     private boolean mImageUserHasPressed;
-    private int mCorrectCount = 0;
+    private int mTotalCount = 0;
     private int mErrorCount = 0;
     private int mDistance = 2;
+    private int mForcePercent = 50;
     private TextView mDistanceText;
 
     private static final int MSG_WAIT_TO_START = 0;
@@ -42,7 +44,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     private static final int MSG_HIDE_IMAGE_ANSWER = 4;
     private static final int MSG_SET_DISTANCE = 5; // arg1 for distance 
     private static final int MSG_IMAGE_WAIT_PRESS_END = 6;
-    private static final int MSG_SHOW_IMAGE_ANSWER_TEXT = 7;
     private static final int MSG_HIDE_IMAGE_ANSWER_TEXT = 8;
 
     private static final int ANSWER_SHOW_TIME_LENGTH = 800;
@@ -82,8 +83,25 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             mHandler.sendEmptyMessageDelayed(MSG_SHOW_IMAGE, 3000);
             break;
         case MSG_SHOW_IMAGE:
-            int next = mRandom.nextInt(8);
+            int next = -1;
+            if (shouldForceRate()) {
+                int dest = 0;
+                int t = -1;
+                Iterator<Integer> iter = mImageDeque.descendingIterator();
+                while (iter.hasNext() && ++dest < (mDistance + 1)) {
+                    t = iter.next();
+                }
+                if (dest == (mDistance + 1)) {
+                    next = t;
+                }
+            }
+            if (next == -1) {
+                next = mRandom.nextInt(8);
+            }
             mImageDeque.addLast(next);
+            if (mImageDeque.size() >= mDistance + 1) {
+                ++mTotalCount;
+            }
             while (mImageDeque.size() > mDistance + 1) {
                 mImageDeque.removeFirst();
             }
@@ -93,6 +111,9 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             mImageView.setVisibility(View.VISIBLE);
             mImageUserHasPressed = false;
             mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE, SHOW_TIME_LENGTH);
+            if (DEBUG) {
+                Toast.makeText(getApplicationContext(), Arrays.toString(mImageDeque.toArray()), 300).show();
+            }
             break;
         case MSG_HIDE_IMAGE:
             mImageView.setVisibility(View.INVISIBLE);
@@ -118,15 +139,13 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         case MSG_SHOW_IMAGE_ANSWER:
             mImageAnswerView.setBackgroundColor(msg.arg1 == 1 ? Color.GREEN : Color.RED);
             mImageAnswerView.setVisibility(View.VISIBLE);
+            mImageArrayText.setText(Arrays.toString(mImageDeque.toArray()) + "\n" + (mTotalCount - mErrorCount) + ":"
+                    + mTotalCount);
+            mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE_ANSWER_TEXT, 1000);
             mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE_ANSWER, ANSWER_SHOW_TIME_LENGTH);
-            mHandler.sendEmptyMessage(MSG_SHOW_IMAGE_ANSWER_TEXT);
             break;
         case MSG_HIDE_IMAGE_ANSWER:
             mImageAnswerView.setVisibility(View.INVISIBLE);
-            break;
-        case MSG_SHOW_IMAGE_ANSWER_TEXT:
-            mImageArrayText.setText(Arrays.toString(mImageDeque.toArray()));
-            mHandler.sendEmptyMessageDelayed(MSG_HIDE_IMAGE_ANSWER_TEXT, 1000);
             break;
         case MSG_HIDE_IMAGE_ANSWER_TEXT:
             mImageArrayText.setText("");
@@ -151,9 +170,17 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
                 mErrorCount++;
                 mHandler.obtainMessage(MSG_SHOW_IMAGE_ANSWER, 0, 0).sendToTarget();
             } else {
-                mCorrectCount++;
                 mHandler.obtainMessage(MSG_SHOW_IMAGE_ANSWER, 1, 0).sendToTarget();
             }
         }
+    }
+
+    private boolean shouldForceRate() {
+        return (mRandom.nextInt(100) < mForcePercent);
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
