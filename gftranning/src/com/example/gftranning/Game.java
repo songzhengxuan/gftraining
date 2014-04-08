@@ -37,6 +37,17 @@ public class Game {
 
     public void setNextResults(int result) {
         mResults.add(result);
+        if (mResults.size() <= mDistance + 1) {
+        	mStatus = STATUS_INIT_SHOWING;
+        } else {
+        	mStatus = STATUS_SHOWING;
+        }
+    }
+    
+    public int getNeedCheckResultCount() {
+    	int result = mResults.size() - 1 - mDistance;
+    	result = result < 0 ? 0 : result;
+    	return result;
     }
 
     public boolean checkInput(boolean input) {
@@ -68,7 +79,7 @@ public class Game {
         mInputs.add(input);
     }
 
-    public boolean checkAndRememberInput(boolean input) {
+    public boolean checkAndRememberUserInput(boolean input) {
         boolean ret = checkInput(input);
         rememberInput(input);
         return ret;
