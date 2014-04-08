@@ -1,11 +1,13 @@
 package com.example.gftranning.test;
 
+import com.example.gftranning.Game;
+
 import android.test.AndroidTestCase;
 
 public class TestGame extends AndroidTestCase {
 
     public void testGame() {
-        assertEquals(true, false);
+        Game game = new Game(8, 0, 0, 1);
     }
 
 }

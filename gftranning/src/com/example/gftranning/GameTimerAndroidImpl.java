@@ -16,7 +16,8 @@ public class GameTimerAndroidImpl extends GameTimer implements Handler.Callback 
 
 	private static final int TIMER_MSG = 0;
 
-	private static final String TAG = GameTimerAndroidImpl.class
+	@SuppressWarnings("unused")
+    private static final String TAG = GameTimerAndroidImpl.class
 			.getSimpleName();
 
 	public GameTimerAndroidImpl() {
