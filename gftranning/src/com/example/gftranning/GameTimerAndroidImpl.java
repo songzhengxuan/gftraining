@@ -9,7 +9,7 @@ import android.os.Message;
 import android.os.SystemClock;
 
 public class GameTimerAndroidImpl extends GameTimer implements Handler.Callback {
-	private GameTimerCallback mCallback;
+	private ArrayList<GameTimerCallback> mCallbacks = new ArrayList<GameTimerCallback>();
 
 	private Handler mHandler;
 	private final Object mLock = new Object();
@@ -80,9 +80,13 @@ public class GameTimerAndroidImpl extends GameTimer implements Handler.Callback 
 					}
 				}
 			}
-			if (tags != null && mCallback != null) {
-				for (Integer aTag : tags) {
-					mCallback.onTimer(aTag.intValue());
+			if (tags != null && mCallbacks != null) {
+				synchronized (mCallbacks) {
+					for (GameTimerCallback callback : mCallbacks) {
+						for (Integer aTag : tags) {
+							callback.onTimer(aTag.intValue());
+						}
+					}
 				}
 			}
 			return true;
@@ -94,8 +98,10 @@ public class GameTimerAndroidImpl extends GameTimer implements Handler.Callback 
 	}
 
 	@Override
-	public void setCallback(GameTimerCallback callback) {
-		mCallback = callback;
+	public void addCallback(GameTimerCallback callback) {
+		synchronized (mCallbacks) {
+			mCallbacks.add(callback);
+		}
 	}
 
 	@Override

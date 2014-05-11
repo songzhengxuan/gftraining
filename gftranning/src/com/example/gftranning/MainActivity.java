@@ -26,7 +26,8 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     private View mImageAnswerView;
     private TextView mImageArrayText;
     private Button mImageMatchButton;
-    private Button mAudioMatchButton;
+    @SuppressWarnings("unused")
+	private Button mAudioMatchButton;
     private Handler mHandler;
     private ArrayDeque<Integer> mImageDeque = new ArrayDeque<Integer>();
     private Random mRandom = new Random();

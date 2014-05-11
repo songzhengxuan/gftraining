@@ -28,6 +28,7 @@
             style="@android:style/TextAppearance.DeviceDefault.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            tools:ignore="NewApi"
             tools:targetApi="14" />
         
         <TextView

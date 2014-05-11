@@ -9,7 +9,7 @@ public abstract class GameTimer {
 
 	public abstract void setNextTimerEventDelayed(long delay, int tag);
 
-	public abstract void setCallback(GameTimerCallback callback);
+	public abstract void addCallback(GameTimerCallback callback);
 	
 	public abstract void removeTimerEventForTag(int tag);
 

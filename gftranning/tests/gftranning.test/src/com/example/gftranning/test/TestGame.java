@@ -42,7 +42,7 @@ public class TestGame extends AndroidTestCase {
 			}
 
 			@Override
-			public void setCallback(GameTimerCallback callback) {
+			public void addCallback(GameTimerCallback callback) {
 				// TODO Auto-generated method stub
 
 			}
@@ -98,23 +98,7 @@ public class TestGame extends AndroidTestCase {
 
 			}
 		};
-		Game game = new Game(8, 0, 0, 1, timer, seq, gameui);
-		game.onTimer(Game.TIMER_EVENT_SHOW_START);
-		game.onTimer(Game.TIMER_EVENT_SHOW_END);
-		game.onTimer(Game.TIMER_EVENT_WAIT_END);
-		assertEquals(Game.STATUS_INIT_SHOWING, game.getStatus());
-
-		game.onTimer(Game.TIMER_EVENT_SHOW_START);
-		game.onTimer(Game.TIMER_EVENT_SHOW_END);
-		game.onTimer(Game.TIMER_EVENT_WAIT_END);
-		assertEquals(Game.STATUS_INIT_SHOWING, game.getStatus());
-
-		game.onTimer(Game.TIMER_EVENT_SHOW_START);
-		assertEquals(Game.STATUS_SHOWING, game.getStatus());
-		game.onTimer(Game.TIMER_EVENT_SHOW_END);
-		assertEquals(Game.STATUS_HIDING, game.getStatus());
-		game.onTimer(Game.TIMER_EVENT_WAIT_END);
-
+		Game game = new Game(0, 0, 1, timer, seq, gameui);
 		assertTrue(game.checkAndRememberUserInput(true));
 	}
 
