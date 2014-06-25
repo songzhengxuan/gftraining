@@ -1,6 +1,7 @@
 package com.example.gftranning;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.util.Log;
 
@@ -28,6 +29,8 @@ public class Game implements GameTimer.GameTimerCallback {
 	private int mCount;
 	ArrayList<Integer> mResults = new ArrayList<Integer>();
 	ArrayList<Boolean> mInputs = new ArrayList<Boolean>();
+	private int mForceRatePercent = -1;
+	private Random mRandom;
 	private int mId;
 
 	static enum ResultAndInputStatus {
@@ -55,6 +58,7 @@ public class Game implements GameTimer.GameTimerCallback {
 		this.mTimer.addCallback(this);
 		this.mGenerator = generator;
 		this.mGameUI = gameUI;
+		this.mRandom = new Random(System.currentTimeMillis());
 	}
 
 	public void setId(int id) {
@@ -80,11 +84,20 @@ public class Game implements GameTimer.GameTimerCallback {
 		start();
 	}
 
+	public void setForceRate(int forceRatePercent) {
+		if (forceRatePercent < 0 || forceRatePercent > 100) {
+			throw new IllegalAccessError("invalid forceRate:"
+					+ forceRatePercent);
+		}
+		mForceRatePercent = forceRatePercent;
+	}
+
 	public int getStatus() {
 		return mStatus;
 	}
 
 	private int generateNext() {
+		
 		return mGenerator.getNext();
 	}
 
@@ -105,16 +118,16 @@ public class Game implements GameTimer.GameTimerCallback {
 	}
 
 	/**
-	 * @param input
+	 * @param userAnswer
 	 * @return true if user input is correct
 	 */
-	private boolean checkInput(boolean input) {
+	private boolean checkInput(boolean userAnswer) {
 		int size = mResults.size();
 		if (size < (mDistance + 2)) {
 			return false;
 		} else {
-			return (mResults.get(size - 1) == mResults
-					.get(size - 2 - mDistance)) == input;
+			boolean checkResult = (mResults.get(size - 1) == mResults.get(size - 2 - mDistance));
+			return checkResult == userAnswer;
 		}
 	}
 

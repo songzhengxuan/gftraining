@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class TestGameActivity2 extends Activity implements OnClickListener {
+	private static final String TAG = null;
 	Handler mHandler;
 	Animation mReadyScalInAnimation;
 	Animation mNumberScleInAnimation;
@@ -34,6 +38,17 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 	// for test use
 	TextView mAnswerText;
 	String mCheckResultsForTest;
+
+	private class DebugClass {
+		String images;
+		String audios;
+		void addImage(String imageDebug) {
+			images += imageDebug;
+		}
+		
+		void addAudio(int card) {
+		}
+	}
 
 	IGameUI mGraphUI = new IGameUI() {
 
@@ -63,6 +78,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 			Toast.makeText(getApplicationContext(), "Already",
 					Toast.LENGTH_SHORT).show();
 			mImageView.setBackgroundColor(Color.RED);
+			mImageMatchButton.startAnimation(mShakeAnimation);
 		}
 
 		@Override
@@ -91,12 +107,56 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 			mTotalProgress.setText(mTotalProgressContent);
 		}
 	};
+
+	private IGameUI mAudioGameUI = new IGameUI() {
+
+		@Override
+		public void display(int result, boolean isPreparaing) {
+			String last = mAudioTestText.getText().toString();
+			last = TextUtils.isEmpty(last) ? "" : "," + result;
+			mAudioTestText.setVisibility(View.VISIBLE);
+			mAudioMatchButton.setEnabled(!isPreparaing);
+		}
+
+		@Override
+		public void hide() {
+			mAudioTestText.setVisibility(View.GONE);
+		}
+
+		@Override
+		public void onSucceed(int lastResult) {
+			String last = mAudioTestText.getText().toString();
+			last = TextUtils.isEmpty(last) ? "" : "[o]";
+		}
+
+		@Override
+		public void onError(int excepted, int errorResult) {
+			String last = mAudioTestText.getText().toString();
+			last = TextUtils.isEmpty(last) ? "" : "[X]";
+		}
+
+		@Override
+		public void onAlreadyMarked() {
+			Toast.makeText(getApplicationContext(), "Already",
+					Toast.LENGTH_SHORT).show();
+			mAudioTestText.setBackgroundColor(Color.RED);
+			mAudioMatchButton.startAnimation(mShakeAnimation);
+		}
+
+		@Override
+		public void onGameEnd() {
+		}
+	};
+
 	private GameTimer mGameTimer;
 	private ISequenceSource mImageSeq;
 	private View mImageMatchButton;
 	private View mAudioMatchButton;
 	private Animation mShakeAnimation;
 	private String mTotalProgressContent;
+	private TextView mAudioTestText;
+	private ISequenceSource mAudioSeq;
+	private Game mAudioGame;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +181,19 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mImageMatchButton.setOnClickListener(this);
 		mAudioMatchButton.setOnClickListener(this);
 		mImageView = (ImageView) findViewById(R.id.image);
+		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
 		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer, mImageSeq,
 				mGraphUI);
 		mImageGame.setId(1);
 		mImageGame.setTestTimes(mTotalTestCount);
+
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer, mAudioSeq,
+				mAudioGameUI);
+		mAudioGame.setId(2);
+		mAudioGame.setTestTimes(mTotalTestCount);
+
 		mTotalProgressContent = "total " + mTotalTestCount;
 		mTotalProgress.setText(mTotalProgressContent);
 
@@ -153,6 +220,22 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 				pos = 0;
 			}
 		};
+		mAudioSeq = new ISequenceSource() {
+			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
+					1, 1, 1, };
+			int pos = 0;
+
+			@Override
+			public int getNext() {
+				return seqs[pos++];
+			}
+
+			@Override
+			public void reset() {
+				pos = 0;
+			}
+		};
+
 	}
 
 	@Override
@@ -240,6 +323,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 	public void startGame() {
 		mImageGame.start();
+		mAudioGame.start();
 	}
 
 	@Override
@@ -249,8 +333,26 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 				mImageGame.checkAndRememberUserInput(true);
 			}
 		} else if (view == mAudioMatchButton) {
+			if (mAudioGame != null) {
+				mAudioGame.checkAndRememberUserInput(true);
+			}
 		}
+	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "onKeyDown");
+		}
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			Log.d(TAG, "onKeyDown left ");
+			return true;
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			Log.d(TAG, "onKeyDown right");
+			return true;
+		}
+		return false;
 	}
 
 }
