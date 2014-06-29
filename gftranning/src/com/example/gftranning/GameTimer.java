@@ -2,17 +2,17 @@ package com.example.gftranning;
 
 public abstract class GameTimer {
 	public static interface GameTimerCallback {
-		public void onTimer(int tag);
+		public void onTimer(int id, int tag);
 	}
-	
-	public abstract void setNextTimerEvent(long absTime, int tag);
 
-	public abstract void setNextTimerEventDelayed(long delay, int tag);
+	public abstract void setNextTimerEvent(long absTime, int id, int tag);
 
-	public abstract void addCallback(GameTimerCallback callback);
-	
-	public abstract void removeTimerEventForTag(int tag);
+	public abstract void setNextTimerEventDelayed(long delay, int id, int tag);
 
-	public abstract void clearAllPendingTimerEvent();
+	public abstract void addCallback(int id, GameTimerCallback callback);
+
+	public abstract void removeTimerEventForGame(int id);
+
+	public abstract void clearAllPendingTimerEvent(int id);
 
 }

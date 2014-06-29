@@ -6,8 +6,6 @@ import java.util.Random;
 import android.util.Log;
 
 public class Game implements GameTimer.GameTimerCallback {
-	private static final int TIMER_EVENT_MSG_MASK = 0xffff;
-	private static final int TIMER_EVENT_ID_MASK = (0xffff << 16);
 	private static final int TIMER_EVENT_SHOW_START = 0;
 	private static final int TIMER_EVENT_SHOW_END = 1;
 	private static final int TIMER_EVENT_WAIT_END = 2;
@@ -55,7 +53,7 @@ public class Game implements GameTimer.GameTimerCallback {
 		this.mDistance = distance;
 		this.mStatus = STATUS_IDLE;
 		this.mTimer = timer;
-		this.mTimer.addCallback(this);
+		this.mTimer.addCallback(mId, this);
 		this.mGenerator = generator;
 		this.mGameUI = gameUI;
 		this.mRandom = new Random(System.currentTimeMillis());
@@ -70,9 +68,9 @@ public class Game implements GameTimer.GameTimerCallback {
 			throw new IllegalStateException("start error");
 		}
 		mStatus = STATUS_INIT_SHOWING;
-		onTimer(TIMER_EVENT_SHOW_START);
-		mTimer.setNextTimerEvent(mDisplayTime,
-				getTimerTagForEvent(TIMER_EVENT_SHOW_END));
+		onTimer(mId, TIMER_EVENT_SHOW_START);
+		mTimer.setNextTimerEvent(mDisplayTime, mId,
+				TIMER_EVENT_SHOW_END);
 	}
 
 	public void restart() {
@@ -80,7 +78,7 @@ public class Game implements GameTimer.GameTimerCallback {
 		mInputs.clear();
 		mResults.clear();
 		mStatus = STATUS_IDLE;
-		mTimer.clearAllPendingTimerEvent();
+		mTimer.clearAllPendingTimerEvent(mId);
 		start();
 	}
 
@@ -97,7 +95,7 @@ public class Game implements GameTimer.GameTimerCallback {
 	}
 
 	private int generateNext() {
-		
+
 		return mGenerator.getNext();
 	}
 
@@ -126,7 +124,8 @@ public class Game implements GameTimer.GameTimerCallback {
 		if (size < (mDistance + 2)) {
 			return false;
 		} else {
-			boolean checkResult = (mResults.get(size - 1) == mResults.get(size - 2 - mDistance));
+			boolean checkResult = (mResults.get(size - 1) == mResults.get(size
+					- 2 - mDistance));
 			return checkResult == userAnswer;
 		}
 	}
@@ -154,7 +153,7 @@ public class Game implements GameTimer.GameTimerCallback {
 		}
 		rememberInput(input);
 		if (mInputs.size() == mCount) {
-			mTimer.clearAllPendingTimerEvent();
+			mTimer.clearAllPendingTimerEvent(mId);
 			mStatus = STATUS_END;
 			mGameUI.onGameEnd();
 		}
@@ -219,14 +218,13 @@ public class Game implements GameTimer.GameTimerCallback {
 	}
 
 	@Override
-	public void onTimer(int tag) {
+	public void onTimer(int id, int tag) {
 		if (BuildConfig.DEBUG) {
 			Log.d(TAG, "Game " + mId + " onTimer " + tag);
 		}
-		if (getIdFromTimerTag(tag) != mId) {
+		if (id != mId) {
 			return;
 		}
-		tag = (tag & TIMER_EVENT_MSG_MASK);
 		switch (tag) {
 		case TIMER_EVENT_SHOW_START:
 			setNextResult(generateNext());
@@ -239,8 +237,8 @@ public class Game implements GameTimer.GameTimerCallback {
 				}
 				mGameUI.display(mResults.get(mResults.size() - 1), false);
 			}
-			mTimer.setNextTimerEventDelayed(mDisplayTime,
-					getTimerTagForEvent(TIMER_EVENT_SHOW_END));
+			mTimer.setNextTimerEventDelayed(mDisplayTime, mId,
+					TIMER_EVENT_SHOW_END);
 			break;
 		case TIMER_EVENT_SHOW_END:
 			if (mStatus == STATUS_INIT_SHOWING) {
@@ -249,35 +247,27 @@ public class Game implements GameTimer.GameTimerCallback {
 				mStatus = STATUS_HIDING;
 			}
 			mGameUI.hide();
-			mTimer.setNextTimerEventDelayed(mWaitTime,
-					getTimerTagForEvent(TIMER_EVENT_WAIT_END));
+			mTimer.setNextTimerEventDelayed(mWaitTime, mId,
+					TIMER_EVENT_WAIT_END);
 			break;
 		case TIMER_EVENT_WAIT_END:
 			if (mStatus == STATUS_INIT_SHOWING) {
-				mTimer.setNextTimerEvent(0,
-						getTimerTagForEvent(TIMER_EVENT_SHOW_START));
+				mTimer.setNextTimerEvent(0, mId,
+						TIMER_EVENT_SHOW_START);
 			} else {
 				ResultAndInputStatus checkResult = getResultAndInputMatchStatus();
 				if (checkResult == ResultAndInputStatus.ReadyForNewInput) {
 					checkAndRememberUserInput(false);
 				}
 				if (mStatus != STATUS_END) {
-					mTimer.setNextTimerEvent(0,
-							getTimerTagForEvent(TIMER_EVENT_SHOW_START));
+					mTimer.setNextTimerEvent(0, mId,
+							TIMER_EVENT_SHOW_START);
 				}
 			}
 			break;
 		default:
 			break;
 		}
-	}
-
-	private static final int getIdFromTimerTag(int timerTag) {
-		return (timerTag & TIMER_EVENT_ID_MASK) >> 16;
-	}
-
-	private final int getTimerTagForEvent(int event) {
-		return (mId << 16) | (event & TIMER_EVENT_MSG_MASK);
 	}
 
 	public double getCorrectRatio() {

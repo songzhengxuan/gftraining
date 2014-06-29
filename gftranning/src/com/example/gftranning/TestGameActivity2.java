@@ -37,40 +37,63 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 	// for test use
 	TextView mAnswerText;
-	String mCheckResultsForTest;
 
 	private class DebugClass {
-		String images;
-		String audios;
-		void addImage(String imageDebug) {
-			images += imageDebug;
+		String images = "";
+		String audios = "";
+
+		void addImage(String msg) {
+			images += msg;
 		}
-		
-		void addAudio(int card) {
+
+		void addAudio(String msg) {
+			audios += msg;
+		}
+
+		void clear() {
+			images = "";
+			audios = "";
+		}
+
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Image:" + images).append("\n");
+			builder.append("Audio:" + audios).append("\n");
+			return builder.toString();
 		}
 	}
+
+	private Runnable mUpdateDebugMsgTask = new Runnable() {
+
+		@Override
+		public void run() {
+			mAnswerText.setText(mDebugMsg.toString());
+		}
+	};
+
+	private DebugClass mDebugMsg = new DebugClass();
 
 	IGameUI mGraphUI = new IGameUI() {
 
 		@Override
 		public void onSucceed(int lastResult) {
 			mImageView.setBackgroundColor(Color.GREEN);
-			mCheckResultsForTest += "[V]";
-			mAnswerText.setText(mCheckResultsForTest);
+			mDebugMsg.addImage("[V]");
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 
 		@Override
 		public void onGameEnd() {
-			mCheckResultsForTest += "end";
-			mAnswerText.setText(mCheckResultsForTest);
+			mDebugMsg.addImage("end");
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 
 		@Override
 		public void onError(int excepted, int errorResult) {
 			mImageView.setBackgroundColor(Color.RED);
 			mImageMatchButton.startAnimation(mShakeAnimation);
-			mCheckResultsForTest += "[X]";
-			mAnswerText.setText(mCheckResultsForTest);
+			mDebugMsg.addImage("[X]");
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 
 		@Override
@@ -113,7 +136,9 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		@Override
 		public void display(int result, boolean isPreparaing) {
 			String last = mAudioTestText.getText().toString();
-			last = TextUtils.isEmpty(last) ? "" : "," + result;
+			last += TextUtils.isEmpty(last) ? "" : "," + result;
+			mAudioTestText.setText(last);
+
 			mAudioTestText.setVisibility(View.VISIBLE);
 			mAudioMatchButton.setEnabled(!isPreparaing);
 		}
@@ -125,14 +150,15 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 		@Override
 		public void onSucceed(int lastResult) {
-			String last = mAudioTestText.getText().toString();
-			last = TextUtils.isEmpty(last) ? "" : "[o]";
+			mDebugMsg.addAudio("[V]");
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 
 		@Override
 		public void onError(int excepted, int errorResult) {
-			String last = mAudioTestText.getText().toString();
-			last = TextUtils.isEmpty(last) ? "" : "[X]";
+			mDebugMsg.addAudio("[X]");
+			mAudioMatchButton.startAnimation(mShakeAnimation);
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 
 		@Override
@@ -145,6 +171,8 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 		@Override
 		public void onGameEnd() {
+			mDebugMsg.addAudio("end");
+			mHandler.post(mUpdateDebugMsgTask);
 		}
 	};
 
@@ -166,7 +194,6 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mTestDistance = 0;
 
 		mAnswerText = (TextView) findViewById(R.id.answer_text);
-		mCheckResultsForTest = "";
 
 		mHandler = new Handler();
 
@@ -322,8 +349,8 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 	}
 
 	public void startGame() {
-		mImageGame.start();
 		mAudioGame.start();
+		mImageGame.start();
 	}
 
 	@Override

@@ -30,31 +30,31 @@ public class TestGame extends AndroidTestCase {
 		GameTimer timer = new GameTimer() {
 
 			@Override
-			public void setNextTimerEvent(long absTime, int tag) {
+			public void setNextTimerEvent(long absTime, int id,int tag) {
 				// TODO Auto-generated method stub
 
 			}
 
 			@Override
-			public void setNextTimerEventDelayed(long delay, int tag) {
+			public void setNextTimerEventDelayed(long delay, int id, int tag) {
 				// TODO Auto-generated method stub
 
 			}
 
 			@Override
-			public void addCallback(GameTimerCallback callback) {
+			public void addCallback(int id, GameTimerCallback callback) {
 				// TODO Auto-generated method stub
 
 			}
 
 			@Override
-			public void clearAllPendingTimerEvent() {
+			public void clearAllPendingTimerEvent(int id) {
 				// TODO Auto-generated method stub
 
 			}
 
 			@Override
-			public void removeTimerEventForTag(int tag) {
+			public void removeTimerEventForGame(int id) {
 				// TODO Auto-generated method stub
 				
 			}
