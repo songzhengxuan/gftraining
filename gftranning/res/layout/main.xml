@@ -11,11 +11,34 @@
         android:padding="10dp"
         android:text="Test Game" />
 
-    <TextView
-        android:id="@+id/text2"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Test Game UI" />
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text="Test Game UI" />
+
+        <EditText
+            android:id="@+id/test_count_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:hint="count"
+            android:inputType="number"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/test_distance_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:hint="distance"
+            android:inputType="number"
+            android:singleLine="true" />
+    </LinearLayout>
 
 </LinearLayout>

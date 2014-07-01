@@ -1,6 +1,8 @@
 
 package com.example.gftranning;
 
+import java.util.Arrays;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +21,10 @@ import android.widget.Toast;
 
 public class TestGameActivity2 extends Activity implements OnClickListener {
     private static final String TAG = null;
+
+    public static final String EXTRA_INT_TEST_COUNT = "count";
+
+    public static final String EXTRA_INT_TEST_DISTANCE = "distance";
 
     Handler mHandler;
 
@@ -99,7 +105,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
         @Override
         public void onGameEnd() {
-            mDebugMsg.addImage("end");
+            mDebugMsg.addImage("end" + Arrays.toString(mImageGame.getCorrectRatio()));
             mHandler.post(mUpdateDebugMsgTask);
         }
 
@@ -183,7 +189,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
         @Override
         public void onGameEnd() {
-            mDebugMsg.addAudio("end");
+            mDebugMsg.addAudio("end" + Arrays.toString(mAudioGame.getCorrectRatio()));
             mHandler.post(mUpdateDebugMsgTask);
         }
     };
@@ -210,8 +216,8 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game);
-        mTotalTestCount = 5;
-        mTestDistance = 0;
+        mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
+        mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1);
 
         mAnswerText = (TextView) findViewById(R.id.answer_text);
 
