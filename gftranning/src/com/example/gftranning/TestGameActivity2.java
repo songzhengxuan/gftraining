@@ -1,10 +1,13 @@
 
 package com.example.gftranning;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -212,6 +215,10 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
     private Game mAudioGame;
 
+    private SoundPool mSoundPool;
+
+    private ArrayList<Integer> mSoundIds;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,6 +258,33 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
         mAnimationPlayer = new StartAnimationPlayer();
         mAnimationPlayer.initAnimations(this);
         mAnimationPlayer.play();
+        mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        mSoundIds = new ArrayList<Integer>();
+        int id = mSoundPool.load(getApplicationContext(), R.raw.ant, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.bee, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.cow, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.dog, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.eel, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.fish, 1);
+        mSoundIds.add(id);
+        id = mSoundPool.load(getApplicationContext(), R.raw.goose, 1);
+        mSoundIds.add(id);
+        mHandler.post(new Runnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                if (i < mSoundIds.size()) {
+                    mSoundPool.play(mSoundIds.get(i), 1.0f, 1.0f, 1, 0, 1.0f);
+                    i++;
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        });
     }
 
     void init() {

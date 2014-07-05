@@ -25,6 +25,8 @@ public class Game implements GameTimer.GameTimerCallback {
 
     private static final String TAG = Game.class.getSimpleName();
 
+    private static final boolean DEBUG = false;
+
     private int mStatus = STATUS_IDLE;
 
     private long mDisplayTime;
@@ -118,7 +120,7 @@ public class Game implements GameTimer.GameTimerCallback {
     }
 
     public void setNextResultForTest(int result) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             setNextResult(result);
         }
     }
@@ -182,12 +184,30 @@ public class Game implements GameTimer.GameTimerCallback {
 
     private boolean checkNumberForNewInput() {
         boolean result = (mInputs.size() + mDistance + 2) == mResults.size();
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             if (!result) {
                 throw new IllegalStateException("number error");
             }
         }
         return result;
+    }
+
+    void testTestMethod() {
+        if (DEBUG) {
+            Log.d(TAG, "this is a test method");
+        }
+    }
+
+    void testTestMethod2() {
+        if (DEBUG) {
+            Log.d(TAG, "this is a test method");
+        }
+    }
+
+    void testTestMethod3() {
+        if (DEBUG) {
+            Log.d(TAG, "this is a test method");
+        }
     }
 
     private ResultAndInputStatus getResultAndInputMatchStatus() {
@@ -219,7 +239,7 @@ public class Game implements GameTimer.GameTimerCallback {
 
     /**
      * set the total number of checks before the end of game
-     *
+     * 
      * @param count if is 0, then is endless game
      */
     public void setTestTimes(int count) {
@@ -234,7 +254,7 @@ public class Game implements GameTimer.GameTimerCallback {
 
     @Override
     public void onTimer(int id, int tag) {
-        if (BuildConfig.DEBUG) {
+        if (DEBUG) {
             Log.d(TAG, "Game " + mId + " onTimer " + tag);
         }
         if (id != mId) {
