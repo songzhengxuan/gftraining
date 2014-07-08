@@ -16,6 +16,7 @@ public class TestGame extends AndroidTestCase {
 		ISequenceSource seq = new ISequenceSource() {
 			int[] seqs = new int[] { 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, };
 			int pos = 0;
+			int replayStart = -1;
 
 			@Override
 			public int getNext() {
@@ -23,14 +24,22 @@ public class TestGame extends AndroidTestCase {
 			}
 
 			@Override
-			public void reset() {
-				pos = 0;
+			public void replay() {
+				if (replayStart >= 0) {
+					pos = replayStart;
+				}
+				replayStart = -1;
+			}
+
+			@Override
+			public void record() {
+				replayStart = pos;
 			}
 		};
 		GameTimer timer = new GameTimer() {
 
 			@Override
-			public void setNextTimerEvent(long absTime, int id,int tag) {
+			public void setNextTimerEvent(long absTime, int id, int tag) {
 				// TODO Auto-generated method stub
 
 			}
@@ -56,7 +65,7 @@ public class TestGame extends AndroidTestCase {
 			@Override
 			public void removeTimerEventForGame(int id) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 		};

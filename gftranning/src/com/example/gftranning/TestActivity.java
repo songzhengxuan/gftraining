@@ -104,6 +104,7 @@ public class TestActivity extends Activity implements View.OnClickListener {
 			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
 					1, 1, 1, };
 			int pos = 0;
+			private int replayStart = -1;
 
 			@Override
 			public int getNext() {
@@ -111,8 +112,16 @@ public class TestActivity extends Activity implements View.OnClickListener {
 			}
 
 			@Override
-			public void reset() {
-				pos = 0;
+			public void replay() {
+				if (replayStart >= 0) {
+					pos = replayStart;
+				}
+				replayStart = -1;
+			}
+
+			@Override
+			public void record() {
+				replayStart = pos;
 			}
 		};
 		mGame2 = new Game(300, 2500, distance, mTimer, fixedSeq, mGameUI2);

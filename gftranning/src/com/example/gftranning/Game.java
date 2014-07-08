@@ -96,7 +96,7 @@ public class Game implements GameTimer.GameTimerCallback {
     }
 
     public void restart() {
-        mGenerator.reset();
+        mGenerator.replay();
         mInputs.clear();
         mResults.clear();
         mStatus = STATUS_IDLE;
