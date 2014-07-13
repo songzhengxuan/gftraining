@@ -140,7 +140,6 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 			if (result < 0 || result > 8) {
 				throw new IllegalArgumentException("invalid result id");
 			}
-			mImageView.setVisibility(View.VISIBLE);
 			int id = getResources().getIdentifier("image" + (result + 1),
 					"drawable", getBaseContext().getPackageName());
 			if (id == 0) {
@@ -155,6 +154,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 					+ mTotalTestCount;
 			mTotalProgress.setText(mTotalProgressContent);
 			mProgressBar.setProgress(mImageGame.getInputSize());
+			mImageView.setVisibility(View.VISIBLE);
 		}
 	};
 
@@ -165,7 +165,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 			String last = mAudioTestText.getText().toString();
 			last += TextUtils.isEmpty(last) ? "" : "," + result;
 			mAudioTestText.setText(last);
-
+			mSoundPool.play(mSoundIds.get(result), 1.0f, 1.0f, 1, 0, 1.0f);
 			mAudioTestText.setVisibility(View.VISIBLE);
 			mAudioMatchButton.setEnabled(!isPreparaing);
 		}
@@ -232,7 +232,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game);
 		mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
-		mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1);
+		mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
 
 		mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 		mAnswerText = (TextView) findViewById(R.id.answer_text);
@@ -287,18 +287,13 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mSoundIds.add(id);
 		id = mSoundPool.load(getApplicationContext(), R.raw.goose, 1);
 		mSoundIds.add(id);
-		mHandler.post(new Runnable() {
-			int i = 0;
-
-			@Override
-			public void run() {
-				if (i < mSoundIds.size()) {
-					mSoundPool.play(mSoundIds.get(i), 1.0f, 1.0f, 1, 0, 1.0f);
-					i++;
-				}
-				mHandler.postDelayed(this, 1000);
-			}
-		});
+		/*
+		 * mHandler.post(new Runnable() { int i = 0;
+		 * 
+		 * @Override public void run() { if (i < mSoundIds.size()) {
+		 * mSoundPool.play(mSoundIds.get(i), 1.0f, 1.0f, 1, 0, 1.0f); i++; }
+		 * mHandler.postDelayed(this, 1000); } });
+		 */
 	}
 
 	void init() {
@@ -363,6 +358,8 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		if (mAnimationPlayer.isPlaying()) {
 			mAnimationPlayer.cancel();
 		}
+		mImageGame.stop();
+		mAudioGame.stop();
 	}
 
 	private class StartAnimationPlayer implements AnimationListener {
@@ -417,7 +414,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 					public void run() {
 						TestGameActivity2.this.startGame();
 					}
-				}, 200);
+				}, 1000);
 			}
 		}
 
