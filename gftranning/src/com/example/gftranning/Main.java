@@ -1,9 +1,14 @@
 
 package com.example.gftranning;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -12,6 +17,18 @@ public class Main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        ScoreRecoder recorder = new ScoreRecoder();
+        
+        ArrayList<Integer> lists = new ArrayList<Integer>();
+        lists.add(1010);
+        lists.add(2010);
+        lists.add(3010);
+        
+        Set<String> string = recorder.parseToRecords(lists);
+        List<Integer> lists2 = recorder.parseToScoreNumber(string);
+        Log.d("hello", "" + lists.equals(lists2));
+        
 
         View v1 = findViewById(R.id.text1);
         v1.setOnClickListener(new View.OnClickListener() {

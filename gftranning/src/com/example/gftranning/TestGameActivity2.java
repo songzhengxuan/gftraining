@@ -95,6 +95,13 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		}
 	};
 
+	private final Runnable mShowResultTask = new Runnable() {
+
+		@Override
+		public void run() {
+		}
+	};
+
 	private final DebugClass mDebugMsg = new DebugClass();
 
 	IGameUI mGraphUI = new IGameUI() {
@@ -255,15 +262,6 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mProgressBar.setMax(mTotalTestCount);
 
 		init();
-		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer, mImageSeq,
-				mGraphUI);
-		mImageGame.setId(1);
-		mImageGame.setTestTimes(mTotalTestCount);
-
-		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer, mAudioSeq,
-				mAudioGameUI);
-		mAudioGame.setId(2);
-		mAudioGame.setTestTimes(mTotalTestCount);
 
 		mTotalProgressContent = "total " + mTotalTestCount;
 		mTotalProgress.setText(mTotalProgressContent);
@@ -349,7 +347,22 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 				replayStart = pos;
 			}
 		};
+		RandomSequence.Builder builder = new RandomSequence.Builder()
+				.setRange(8).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.4);
 
+		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder.build(), mGraphUI);
+		mImageGame.setId(1);
+		mImageGame.setTestTimes(mTotalTestCount);
+
+		RandomSequence.Builder builder2 = new RandomSequence.Builder()
+				.setRange(8).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.4);
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder2.build(), mAudioGameUI);
+		mAudioGame.setId(2);
+		mAudioGame.setTestTimes(mTotalTestCount);
 	}
 
 	@Override
