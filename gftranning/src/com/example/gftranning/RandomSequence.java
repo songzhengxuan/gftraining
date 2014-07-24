@@ -1,10 +1,14 @@
 package com.example.gftranning;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
 
+import android.util.Log;
+
 public class RandomSequence implements ISequenceSource {
-	Random mRandom = new Random();
+	Random mRandom = new SecureRandom();
+	Random mRepeatRandom = new Random();
 	double mRepeatRatio;
 	int mRepeatDistance;
 	int mRange;
@@ -12,6 +16,7 @@ public class RandomSequence implements ISequenceSource {
 	private static final int MODE_NORMAL = 0;
 	private static final int MODE_RECORDING = 1;
 	private static final int MODE_REPLAYING = 2;
+    private static final String TAG = "hello";
 
 	int mMode;
 	int mRecordStart = -1;
@@ -51,8 +56,10 @@ public class RandomSequence implements ISequenceSource {
 			result.mRandom = new Random();
 			result.mRepeatRatio = this.repeatRatio;
 			result.mRange = this.range;
+			result.mRepeatDistance = this.repeatDistance;
 			result.mSeed = System.currentTimeMillis();
 			result.mRandom.setSeed(result.mSeed);
+			result.mRepeatRandom.setSeed(result.mSeed);
 			result.mMode = MODE_NORMAL;
 			return result;
 		}
@@ -67,14 +74,22 @@ public class RandomSequence implements ISequenceSource {
 			}
 		} else {
 			if (mHistory.size() > mRepeatDistance
-					&& mRandom.nextInt(100) <= mRepeatRatio * 100) {
+					&& mRepeatRandom.nextInt(100) <= mRepeatRatio * 100) {
 				next = mHistory.get(mHistory.size() - mRepeatDistance - 1);
+    		    if (BuildConfig.DEBUG) {
+    		        Log.e(TAG, "repeat:" + next);
+    		    }
 			}
 			if (next == -1) {
+			    for (int i = 0; i < mRandom.nextInt() && i < 8; ++i) {
+			        mRandom.nextInt();
+			    }
 				next = mRandom.nextInt(mRange);
+    		    if (BuildConfig.DEBUG) {
+    		        Log.e(TAG, "new:" + next);
+    		    }
 			}
 			mHistory.add(next);
-
 		}
 		return next;
 	}

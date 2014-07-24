@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -238,6 +239,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
 		mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
 
@@ -297,7 +299,27 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 	void init() {
 		mShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
 		mGameTimer = new GameTimerAndroidImpl();
-		mImageSeq = new ISequenceSource() {
+		RandomSequence.Builder builder = new RandomSequence.Builder()
+				.setRange(8).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.3);
+
+		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder.build(), mGraphUI);
+		mImageGame.setId(1);
+		mImageGame.setTestTimes(mTotalTestCount);
+
+		RandomSequence.Builder builder2 = new RandomSequence.Builder()
+				.setRange(7).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.3);
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder2.build(), mAudioGameUI);
+		mAudioGame.setId(2);
+		mAudioGame.setTestTimes(mTotalTestCount);
+	}
+
+    @SuppressWarnings("unused")
+    private void initFakeSequence() {
+        mImageSeq = new ISequenceSource() {
 			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
 					1, 1, 1, };
 
@@ -347,23 +369,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 				replayStart = pos;
 			}
 		};
-		RandomSequence.Builder builder = new RandomSequence.Builder()
-				.setRange(8).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.4);
-
-		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder.build(), mGraphUI);
-		mImageGame.setId(1);
-		mImageGame.setTestTimes(mTotalTestCount);
-
-		RandomSequence.Builder builder2 = new RandomSequence.Builder()
-				.setRange(8).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.4);
-		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder2.build(), mAudioGameUI);
-		mAudioGame.setId(2);
-		mAudioGame.setTestTimes(mTotalTestCount);
-	}
+    }
 
 	@Override
 	protected void onPause() {

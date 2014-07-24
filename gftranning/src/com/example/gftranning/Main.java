@@ -1,10 +1,6 @@
 
 package com.example.gftranning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,23 +8,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.gftranning.RandomSequence.Builder;
+
 public class Main extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        ScoreRecoder recorder = new ScoreRecoder();
-        
-        ArrayList<Integer> lists = new ArrayList<Integer>();
-        lists.add(1010);
-        lists.add(2010);
-        lists.add(3010);
-        
-        Set<String> string = recorder.parseToRecords(lists);
-        List<Integer> lists2 = recorder.parseToScoreNumber(string);
-        Log.d("hello", "" + lists.equals(lists2));
-        
+        Builder seqBuilder = new RandomSequence.Builder();
+        seqBuilder.setRange(8).setRepeatDistance(1).setRepeatRatio(0.3);
+        ISequenceSource ss = seqBuilder.build();
+        for (int i = 0; i < 10; ++i) {
+            Log.e("hello", "i:" + ss.getNext());
+        }
 
         View v1 = findViewById(R.id.text1);
         v1.setOnClickListener(new View.OnClickListener() {
