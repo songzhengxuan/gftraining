@@ -8,10 +8,13 @@
         android:minSdkVersion="9"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:name=".GFTApplication"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.gftranning.MainActivity"
@@ -27,6 +30,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.gftranning.crashhandler.CrashInfoActivity"
+            android:process=":crashhandler" >
         </activity>
     </application>
 

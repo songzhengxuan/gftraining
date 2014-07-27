@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -297,6 +296,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 	}
 
 	void init() {
+
 		mShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
 		mGameTimer = new GameTimerAndroidImpl();
 		RandomSequence.Builder builder = new RandomSequence.Builder()
