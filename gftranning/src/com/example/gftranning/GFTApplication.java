@@ -16,6 +16,7 @@ public class GFTApplication extends Application {
             mCrashHandler = new CrashHandler(this);
             Thread.setDefaultUncaughtExceptionHandler(mCrashHandler);
         }
+        LevelUpComputer.getInstance().init(getApplicationContext());
     }
 
 }
