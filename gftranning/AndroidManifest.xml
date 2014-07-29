@@ -22,7 +22,7 @@
         </activity>
         <activity android:name="com.example.gftranning.TestActivity" >
         </activity>
-        <activity android:name="com.example.gftranning.TestGameActivity2" >
+        <activity android:name="com.example.gftranning.GameActivity" >
         </activity>
         <activity android:name="com.example.gftranning.Main" >
             <intent-filter>

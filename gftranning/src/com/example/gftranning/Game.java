@@ -199,24 +199,6 @@ public class Game implements GameTimer.GameTimerCallback {
 		return result;
 	}
 
-	void testTestMethod() {
-		if (DEBUG) {
-			Log.d(TAG, "this is a test method");
-		}
-	}
-
-	void testTestMethod2() {
-		if (DEBUG) {
-			Log.d(TAG, "this is a test method");
-		}
-	}
-
-	void testTestMethod3() {
-		if (DEBUG) {
-			Log.d(TAG, "this is a test method");
-		}
-	}
-
 	private ResultAndInputStatus getResultAndInputMatchStatus() {
 		if ((mInputs.size() + mDistance + 2) == mResults.size()) {
 			return ResultAndInputStatus.ReadyForNewInput;

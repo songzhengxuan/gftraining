@@ -22,12 +22,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TestGameActivity2 extends Activity implements OnClickListener {
+public class GameActivity extends Activity implements OnClickListener {
 	private static final String TAG = null;
 
 	public static final String EXTRA_INT_TEST_COUNT = "count";
 
 	public static final String EXTRA_INT_TEST_DISTANCE = "distance";
+	public static final String EXTRA_INT_MODE = "mode";
+	public static final String EXTRA_INT_CARRER_CURRNET_LEVEL = "current_level";
+	public static final int MODE_QUICKGAME = 0;
+	public static final int MODE_CAREER = 1;
 
 	Handler mHandler;
 
@@ -234,13 +238,13 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 	private ArrayList<Integer> mSoundIds;
 
+	private int mMode;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.game);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
-		mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
 
 		mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 		mAnswerText = (TextView) findViewById(R.id.answer_text);
@@ -249,7 +253,6 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 		mGamePanel = findViewById(R.id.game_panel);
 		mCenterText = (TextView) findViewById(R.id.center_text);
-
 		mTotalProgress = (TextView) findViewById(R.id.total_progress_text);
 		mGraphProgress = (TextView) findViewById(R.id.progress_text_graph);
 		mAudioProgress = (TextView) findViewById(R.id.progress_text_audio);
@@ -260,13 +263,12 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mImageView = (ImageView) findViewById(R.id.image);
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
-		mProgressBar.setMax(mTotalTestCount);
-
 		init();
+		initGame();
+	}
 
-		mTotalProgressContent = "total " + mTotalTestCount;
-		mTotalProgress.setText(mTotalProgressContent);
-
+	void init() {
+		mShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
 		mAnimationPlayer = new StartAnimationPlayer();
 		mAnimationPlayer.initAnimations(this);
 		mAnimationPlayer.play();
@@ -286,40 +288,41 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		mSoundIds.add(id);
 		id = mSoundPool.load(getApplicationContext(), R.raw.goose, 1);
 		mSoundIds.add(id);
-		/*
-		 * mHandler.post(new Runnable() { int i = 0;
-		 * 
-		 * @Override public void run() { if (i < mSoundIds.size()) {
-		 * mSoundPool.play(mSoundIds.get(i), 1.0f, 1.0f, 1, 0, 1.0f); i++; }
-		 * mHandler.postDelayed(this, 1000); } });
-		 */
 	}
 
-	void init() {
+	void initGame() {
+		mMode = getIntent().getIntExtra(EXTRA_INT_MODE, MODE_QUICKGAME);
+		if (mMode == MODE_QUICKGAME) {
+			mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
+			mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
+			mGameTimer = new GameTimerAndroidImpl();
+			RandomSequence.Builder builder = new RandomSequence.Builder()
+					.setRange(8).setRepeatDistance(mTestDistance)
+					.setRepeatRatio(0.3);
 
-		mShakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
-		mGameTimer = new GameTimerAndroidImpl();
-		RandomSequence.Builder builder = new RandomSequence.Builder()
-				.setRange(8).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.3);
+			mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
+					builder.build(), mGraphUI);
+			mImageGame.setId(1);
+			mImageGame.setTestTimes(mTotalTestCount);
 
-		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder.build(), mGraphUI);
-		mImageGame.setId(1);
-		mImageGame.setTestTimes(mTotalTestCount);
+			RandomSequence.Builder builder2 = new RandomSequence.Builder()
+					.setRange(7).setRepeatDistance(mTestDistance)
+					.setRepeatRatio(0.3);
+			mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
+					builder2.build(), mAudioGameUI);
+			mAudioGame.setId(2);
+			mAudioGame.setTestTimes(mTotalTestCount);
 
-		RandomSequence.Builder builder2 = new RandomSequence.Builder()
-				.setRange(7).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.3);
-		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder2.build(), mAudioGameUI);
-		mAudioGame.setId(2);
-		mAudioGame.setTestTimes(mTotalTestCount);
+			mTotalProgressContent = "total " + mTotalTestCount;
+			mTotalProgress.setText(mTotalProgressContent);
+			mProgressBar.setMax(mTotalTestCount);
+		} else if (mMode == MODE_CAREER) {
+		}
 	}
 
-    @SuppressWarnings("unused")
-    private void initFakeSequence() {
-        mImageSeq = new ISequenceSource() {
+	@SuppressWarnings("unused")
+	private void initFakeSequence() {
+		mImageSeq = new ISequenceSource() {
 			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
 					1, 1, 1, };
 
@@ -369,7 +372,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 				replayStart = pos;
 			}
 		};
-    }
+	}
 
 	@Override
 	protected void onPause() {
@@ -410,7 +413,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 		@Override
 		public void onAnimationEnd(Animation anim) {
 			playingAnimation = null;
-			if (TestGameActivity2.this.isFinishing() || canceled) {
+			if (GameActivity.this.isFinishing() || canceled) {
 				return;
 			}
 			if (anim == mReadyScalInAnimation) {
@@ -431,7 +434,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 
 					@Override
 					public void run() {
-						TestGameActivity2.this.startGame();
+						GameActivity.this.startGame();
 					}
 				}, 1000);
 			}
@@ -447,7 +450,7 @@ public class TestGameActivity2 extends Activity implements OnClickListener {
 			playingAnimation = anim;
 		}
 
-		void initAnimations(TestGameActivity2 testGameActivity2) {
+		void initAnimations(GameActivity testGameActivity2) {
 			testGameActivity2.mReadyScalInAnimation = AnimationUtils
 					.loadAnimation(testGameActivity2, R.anim.ready_scale_in);
 

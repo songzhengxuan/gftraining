@@ -65,10 +65,10 @@ public class Main extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(Main.this, TestGameActivity2.class);
-                intent.putExtra(TestGameActivity2.EXTRA_INT_TEST_COUNT,
+                Intent intent = new Intent(Main.this, GameActivity.class);
+                intent.putExtra(GameActivity.EXTRA_INT_TEST_COUNT,
                         Integer.parseInt(countEdit.getText().toString()));
-                intent.putExtra(TestGameActivity2.EXTRA_INT_TEST_DISTANCE,
+                intent.putExtra(GameActivity.EXTRA_INT_TEST_DISTANCE,
                         Integer.parseInt(distanceEdit.getText().toString()));
                 startActivity(intent);
             }
