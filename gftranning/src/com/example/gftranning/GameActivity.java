@@ -123,6 +123,7 @@ public class GameActivity extends Activity implements OnClickListener {
 					+ Arrays.toString(mImageGame.getCorrectRatio()));
 			mHandler.post(mUpdateDebugMsgTask);
 			mProgressBar.setProgress(mTotalTestCount);
+			GameActivity.this.onGameEnd(1);
 		}
 
 		@Override
@@ -212,6 +213,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			mDebugMsg.addAudio("end"
 					+ Arrays.toString(mAudioGame.getCorrectRatio()));
 			mHandler.post(mUpdateDebugMsgTask);
+			GameActivity.this.onGameEnd(2);
 		}
 	};
 	private ProgressBar mProgressBar;
@@ -295,29 +297,34 @@ public class GameActivity extends Activity implements OnClickListener {
 		if (mMode == MODE_QUICKGAME) {
 			mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
 			mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
-			mGameTimer = new GameTimerAndroidImpl();
-			RandomSequence.Builder builder = new RandomSequence.Builder()
-					.setRange(8).setRepeatDistance(mTestDistance)
-					.setRepeatRatio(0.3);
-
-			mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
-					builder.build(), mGraphUI);
-			mImageGame.setId(1);
-			mImageGame.setTestTimes(mTotalTestCount);
-
-			RandomSequence.Builder builder2 = new RandomSequence.Builder()
-					.setRange(7).setRepeatDistance(mTestDistance)
-					.setRepeatRatio(0.3);
-			mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
-					builder2.build(), mAudioGameUI);
-			mAudioGame.setId(2);
-			mAudioGame.setTestTimes(mTotalTestCount);
-
-			mTotalProgressContent = "total " + mTotalTestCount;
-			mTotalProgress.setText(mTotalProgressContent);
-			mProgressBar.setMax(mTotalTestCount);
 		} else if (mMode == MODE_CAREER) {
+			int currentLevel = getIntent().getIntExtra(
+					EXTRA_INT_CARRER_CURRNET_LEVEL, 0);
+			mTotalTestCount = LevelUpComputer.getInstance()
+					.getEachGameTestCount(this, currentLevel);
+			mTestDistance = currentLevel;
 		}
+		mGameTimer = new GameTimerAndroidImpl();
+		RandomSequence.Builder builder = new RandomSequence.Builder()
+				.setRange(8).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.3);
+
+		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder.build(), mGraphUI);
+		mImageGame.setId(1);
+		mImageGame.setTestTimes(mTotalTestCount);
+
+		RandomSequence.Builder builder2 = new RandomSequence.Builder()
+				.setRange(7).setRepeatDistance(mTestDistance)
+				.setRepeatRatio(0.3);
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
+				builder2.build(), mAudioGameUI);
+		mAudioGame.setId(2);
+		mAudioGame.setTestTimes(mTotalTestCount);
+
+		mTotalProgressContent = "total " + mTotalTestCount;
+		mTotalProgress.setText(mTotalProgressContent);
+		mProgressBar.setMax(mTotalTestCount);
 	}
 
 	@SuppressWarnings("unused")
@@ -501,4 +508,19 @@ public class GameActivity extends Activity implements OnClickListener {
 		return super.onKeyDown(keyCode, event);
 	}
 
+	/**
+	 * notifiy game end
+	 * @param type 1 for image, 2 for graph
+	 */
+	void onGameEnd(int type) {
+		mEndedGameFlag = (mEndedGameFlag | type);
+		if (mEndedGameFlag == 3) {
+			int[] a = mImageGame.getCorrectRatio();
+			int[] b = mAudioGame.getCorrectRatio();
+			if (a[0] == a[1] && b[0] == b[1]) {
+				Toast.makeText(this, "good", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+	private int mEndedGameFlag = 0;
 }

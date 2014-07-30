@@ -13,9 +13,9 @@ public class LevelUpComputer {
     }
 
     static final class GameLevel {
-        int total;
+        final int total;
 
-        int eachGameCount;
+        final int eachGameCount;
 
         int progress;
 
@@ -69,7 +69,7 @@ public class LevelUpComputer {
     }
 
     public int getCurrentLevelTotal(Context context) {
-        return getLevelTotal(context, getCurrentLevel(context));
+        return getLevelTotalGameCount(context, getCurrentLevel(context));
     }
 
     public int getCurrentLevelProgress(Context context) {
@@ -84,15 +84,19 @@ public class LevelUpComputer {
         return 7;
     }
 
-    protected int getLevelTotal(Context context, int level) {
+    public int getLevelTotalGameCount(Context context, int level) {
         return mLevels[level].total;
     }
+ 
+    public int getEachGameTestCount(Context context, int level) {
+    	return mLevels[level].eachGameCount;
+    }
 
-    protected int getLevelProgress(Context context, int level) {
+    public int getLevelProgress(Context context, int level) {
         return mLevels[level].progress;
     }
 
-    protected boolean incLevelSucceedCount(Context context, int level) {
+    public boolean incLevelSucceedCount(Context context, int level) {
         mLevels[level].progress += 1;
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();
