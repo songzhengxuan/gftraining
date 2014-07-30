@@ -266,6 +266,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
+		initFakeSequence();
 		initGame();
 	}
 
@@ -305,20 +306,26 @@ public class GameActivity extends Activity implements OnClickListener {
 			mTestDistance = currentLevel;
 		}
 		mGameTimer = new GameTimerAndroidImpl();
-		RandomSequence.Builder builder = new RandomSequence.Builder()
-				.setRange(8).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.3);
+		if (mImageSeq == null) {
+    		RandomSequence.Builder builder = new RandomSequence.Builder()
+    				.setRange(8).setRepeatDistance(mTestDistance)
+    				.setRepeatRatio(0.3);
+		    mImageSeq = builder.build();
+		}
 
 		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder.build(), mGraphUI);
+				mImageSeq, mGraphUI);
 		mImageGame.setId(1);
 		mImageGame.setTestTimes(mTotalTestCount);
 
-		RandomSequence.Builder builder2 = new RandomSequence.Builder()
-				.setRange(7).setRepeatDistance(mTestDistance)
-				.setRepeatRatio(0.3);
+		if (mAudioSeq == null) {
+    		RandomSequence.Builder builder2 = new RandomSequence.Builder()
+    				.setRange(7).setRepeatDistance(mTestDistance)
+    				.setRepeatRatio(0.3);
+    		mAudioSeq = builder2.build();
+		}
 		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				builder2.build(), mAudioGameUI);
+				mAudioSeq, mAudioGameUI);
 		mAudioGame.setId(2);
 		mAudioGame.setTestTimes(mTotalTestCount);
 
@@ -330,7 +337,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	@SuppressWarnings("unused")
 	private void initFakeSequence() {
 		mImageSeq = new ISequenceSource() {
-			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
+			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 					1, 1, 1, };
 
 			int pos = 0;
@@ -355,7 +362,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			}
 		};
 		mAudioSeq = new ISequenceSource() {
-			int[] seqs = new int[] { 0, 1, 2, 3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,
+			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 					1, 1, 1, };
 
 			int pos = 0;

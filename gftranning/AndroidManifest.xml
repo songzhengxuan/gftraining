@@ -24,6 +24,8 @@
         </activity>
         <activity android:name="com.example.gftranning.GameActivity" >
         </activity>
+        <activity android:name="com.example.gftranning.NewMainActivity" >
+        </activity>
         <activity android:name="com.example.gftranning.Main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
