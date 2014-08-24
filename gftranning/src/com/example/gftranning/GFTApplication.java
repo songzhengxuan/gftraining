@@ -3,7 +3,6 @@ package com.example.gftranning;
 
 import com.example.gftrainning.utils.Utils;
 import com.example.gftranning.crashhandler.CrashHandler;
-import com.example.gftranning.levelup.LevelUpComputer;
 
 import android.app.Application;
 

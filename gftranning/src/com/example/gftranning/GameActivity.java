@@ -3,8 +3,6 @@ package com.example.gftranning;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.example.gftranning.levelup.LevelUpComputer;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.media.AudioManager;

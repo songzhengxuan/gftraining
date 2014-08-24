@@ -73,16 +73,6 @@ public class Main extends Activity {
                 startActivity(intent);
             }
         });
-        
-        View v3 = findViewById(R.id.text3);
-        v3.setOnClickListener(new View.OnClickListener() {
-            
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Main.this, NewMainActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
 }
