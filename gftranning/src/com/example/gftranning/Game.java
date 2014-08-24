@@ -164,7 +164,7 @@ public class Game implements GameTimer.GameTimerCallback {
 		mInputs.add(input);
 	}
 
-	public boolean checkAndRememberUserInput(boolean input) {
+	public boolean checkAndRememberUserInput(boolean input, boolean isTimeOut) {
 		if (currentResultIsAlreadyMarked()) {
 			mGameUI.onAlreadyMarked();
 			return false;
@@ -174,7 +174,7 @@ public class Game implements GameTimer.GameTimerCallback {
 			mGameUI.onSucceed(mResults.get(mResults.size() - 1));
 		} else {
 			mGameUI.onError(mResults.get(mResults.size() - 1),
-					mResults.get(mResults.size() - 2 - mDistance));
+					mResults.get(mResults.size() - 2 - mDistance), isTimeOut);
 		}
 		rememberInput(input);
 		if (mInputs.size() == mCount) {
@@ -183,6 +183,10 @@ public class Game implements GameTimer.GameTimerCallback {
 			mGameUI.onGameEnd();
 		}
 		return ret;
+	}
+
+	public boolean checkAndRememberUserInput(boolean input) {
+		return checkAndRememberUserInput(input, false);
 	}
 
 	private boolean currentResultIsAlreadyMarked() {
@@ -281,7 +285,7 @@ public class Game implements GameTimer.GameTimerCallback {
 			} else {
 				ResultAndInputStatus checkResult = getResultAndInputMatchStatus();
 				if (checkResult == ResultAndInputStatus.ReadyForNewInput) {
-					checkAndRememberUserInput(false);
+					checkAndRememberUserInput(false, true);
 				}
 				if (mStatus != STATUS_END) {
 					mTimer.setNextTimerEvent(0, mId, TIMER_EVENT_SHOW_START);

@@ -22,8 +22,9 @@ public interface IGameUI {
 	 * display the errors result of errorResult, it should be excepted
 	 * @param excepted 
 	 * @param errorResult
+	 * @param isTimeOut 
 	 */
-	public void onError(int excepted, int errorResult);
+	public void onError(int excepted, int errorResult, boolean isTimeOut);
 	
 	/**
 	 *

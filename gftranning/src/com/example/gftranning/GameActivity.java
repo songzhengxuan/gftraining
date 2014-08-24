@@ -127,10 +127,13 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 
 		@Override
-		public void onError(int excepted, int errorResult) {
-			mImageView.setBackgroundColor(Color.RED);
+		public void onError(int excepted, int errorResult, boolean isTimeout) {
 			mImageMatchButton.startAnimation(mShakeAnimation);
-			mDebugMsg.addImage("[X]");
+			if (isTimeout) {
+				mDebugMsg.addImage("[M]");
+			} else {
+				mDebugMsg.addImage("[X]");
+			}
 			mHandler.post(mUpdateDebugMsgTask);
 		}
 
@@ -194,8 +197,12 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 
 		@Override
-		public void onError(int excepted, int errorResult) {
-			mDebugMsg.addAudio("[X]");
+		public void onError(int excepted, int errorResult, boolean isTimeOut) {
+			if (isTimeOut) {
+				mDebugMsg.addAudio("[M]");
+			} else {
+				mDebugMsg.addAudio("[X]");
+			}
 			mAudioMatchButton.startAnimation(mShakeAnimation);
 			mHandler.post(mUpdateDebugMsgTask);
 		}

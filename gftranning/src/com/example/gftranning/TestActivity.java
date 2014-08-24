@@ -39,7 +39,7 @@ public class TestActivity extends Activity implements View.OnClickListener {
 		}
 
 		@Override
-		public void onError(int excepted, int errorResult) {
+		public void onError(int excepted, int errorResult, boolean isTimeOut) {
 			String current = (String) textView.getText();
 			current = current + "X";
 			textView.setText(current);
