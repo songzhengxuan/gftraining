@@ -22,32 +22,6 @@ public class Main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        new Thread() {
-            public void run() {
-                Socket socket = new Socket();
-                InetAddress addr;
-                try {
-                    addr = InetAddress.getByName("www.baidu.com");
-                    socket.connect(new InetSocketAddress(addr, 80));
-                    OutputStream ous = socket.getOutputStream();
-                } catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-
-        Builder seqBuilder = new RandomSequence.Builder();
-        seqBuilder.setRange(8).setRepeatDistance(1).setRepeatRatio(0.3);
-        ISequenceSource ss = seqBuilder.build();
-        for (int i = 0; i < 10; ++i) {
-            Log.e("hello", "i:" + ss.getNext());
-        }
 
         View v1 = findViewById(R.id.text1);
         v1.setOnClickListener(new View.OnClickListener() {

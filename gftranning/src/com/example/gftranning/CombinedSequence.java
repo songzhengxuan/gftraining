@@ -4,7 +4,6 @@ import java.security.SecureRandom;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Stack;
 
 import android.util.Pair;
 
@@ -21,7 +20,7 @@ public class CombinedSequence {
 		ArrayList<Pair<Integer, Integer>> result = new ArrayList<Pair<Integer, Integer>>();
 		switch (difficulty) {
 		case EASY:
-			computeEasy(result, distance, testTime, video, audio);
+			generateEasy(result, distance, testTime, video, audio);
 			break;
 		}
 		return result;
@@ -84,6 +83,42 @@ public class CombinedSequence {
 	}
 
 	/**
+	 * init a random sequence which has no match
+	 * */
+	private void initRandomSequence(ArrayList<Pair<Integer, Integer>> result,
+			int distance, int testTime, int video, int audio) {
+		Deque<Integer> videoSet = new ArrayDeque<Integer>();
+		Deque<Integer> audioSet = new ArrayDeque<Integer>();
+		result.clear();
+		for (int i = 0; i < 1 + distance + testTime; ++i) {
+			int newVideo = mRandom.nextInt(video);
+			int triedTime = 0;
+			while (videoSet.contains(newVideo) && triedTime < video) {
+				newVideo = (newVideo + 1) % video;
+				++triedTime;
+			}
+			videoSet.addLast(Integer.valueOf(newVideo));
+			while (videoSet.size() >= (distance + 1)) {
+				videoSet.pop();
+			}
+
+			int newAudio = mRandom.nextInt(audio);
+			triedTime = 0;
+			while (audioSet.contains(newAudio) && triedTime < audio) {
+				newAudio = (newAudio + 1) % audio;
+				++triedTime;
+			}
+			audioSet.addLast(Integer.valueOf(newAudio));
+			while (audioSet.size() >= (distance + 1)) {
+				audioSet.pop();
+			}
+
+			result.add(new Pair<Integer, Integer>(Integer.valueOf(newVideo),
+					Integer.valueOf(newAudio)));
+		}
+	}
+
+	/**
 	 * compute
 	 * 
 	 * @param result
@@ -92,20 +127,26 @@ public class CombinedSequence {
 	 * @param video
 	 * @param audio
 	 */
-	private void computeEasy(ArrayList<Pair<Integer, Integer>> result,
+	private void generateEasy(ArrayList<Pair<Integer, Integer>> result,
 			int distance, int testTime, int video, int audio) {
 		final int eachTestLength = distance + 1 + 1;
-		final int totalDisplayNum = distance + 1 + testTime;
-		int[] occupiedFlag = new int[totalDisplayNum];
-		for (int i = 0; i < totalDisplayNum; ++i) {
-			occupiedFlag[i] = -1;
+		final int totalDisplayNum = 1 + distance + testTime;
+		final int maxAssignedMatchCount = (totalDisplayNum - 1)
+				/ eachTestLength;
+		int triedCount = 0;
+		int assignedMatchCount = mRandom.nextInt(maxAssignedMatchCount + 1);
+		while (assignedMatchCount == 0 && ++triedCount < 3) {
+			assignedMatchCount = mRandom.nextInt(maxAssignedMatchCount + 1);
 		}
-		while (true) {
+		int freeCount = totalDisplayNum - assignedMatchCount * eachTestLength;
+		int offset = 0;
 
+		for (int i = 0; i < assignedMatchCount; ++i) {
+			offset += mRandom.nextInt(freeCount);
 		}
 	}
 
-	private void computeNormal(ArrayList<Pair<Integer, Integer>> result,
+	private void generateNormal(ArrayList<Pair<Integer, Integer>> result,
 			int distance, int testTime, int video, int audio) {
 	}
 
