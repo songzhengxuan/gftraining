@@ -273,7 +273,7 @@ public class GameActivity extends Activity implements OnClickListener {
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
-		initFakeSequence();
+		//initFakeSequence();
 		initGame();
 	}
 
