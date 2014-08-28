@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -30,6 +31,10 @@ public class GameActivity extends Activity implements OnClickListener {
 	public static final String EXTRA_INT_TEST_DISTANCE = "distance";
 	public static final String EXTRA_INT_MODE = "mode";
 	public static final String EXTRA_INT_CARRER_CURRNET_LEVEL = "current_level";
+	public static final String RESULT_KEY_TEST_TOTAL = "test_total";
+	public static final String RESULT_KEY_TEST_CORRECT = "test_correct";
+	public static final String RESULT_KEY_TEST_START_TIME_MILLIS = "start_time_millis";
+	public static final String RESULT_KEY_TEST_END_TIME_MILLIS = "start_time_millis";
 	public static final int MODE_QUICKGAME = 0;
 	public static final int MODE_CAREER = 1;
 
@@ -63,6 +68,13 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	// for test use
 	TextView mAnswerText;
+
+	private static final String STATE_KEY_TEST_TOTAL = "test_total";
+	private static final String STATE_KEY_TEST_CORRECT = "test_correct";
+	private static final String STATE_KEY_TEST_START_TIME_MILLIS = "sk_start_time_millis";
+	private ArrayList<Integer> mTestTotalCounts = new ArrayList<Integer>();
+	private ArrayList<Integer> mTestCorrectCounts = new ArrayList<Integer>();
+	private long mStartTimeMillis;
 
 	private class DebugClass {
 		String images = "";
@@ -273,8 +285,25 @@ public class GameActivity extends Activity implements OnClickListener {
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
-		//initFakeSequence();
+		// initFakeSequence();
 		initGame();
+
+		mStartTimeMillis = System.currentTimeMillis();
+		if (savedInstanceState != null) {
+			if (savedInstanceState.containsKey(STATE_KEY_TEST_TOTAL)) {
+				mTestTotalCounts = savedInstanceState
+						.getIntegerArrayList(STATE_KEY_TEST_TOTAL);
+			}
+			if (savedInstanceState.containsKey(STATE_KEY_TEST_CORRECT)) {
+				mTestCorrectCounts = savedInstanceState
+						.getIntegerArrayList(STATE_KEY_TEST_CORRECT);
+			}
+			if (savedInstanceState
+					.containsKey(STATE_KEY_TEST_START_TIME_MILLIS)) {
+				mStartTimeMillis = savedInstanceState
+						.getLong(STATE_KEY_TEST_START_TIME_MILLIS);
+			}
+		}
 	}
 
 	void init() {
@@ -314,31 +343,38 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 		mGameTimer = new GameTimerAndroidImpl();
 		if (mImageSeq == null) {
-    		RandomSequence.Builder builder = new RandomSequence.Builder()
-    				.setRange(8).setRepeatDistance(mTestDistance)
-    				.setRepeatRatio(0.3);
-		    mImageSeq = builder.build();
+			RandomSequence.Builder builder = new RandomSequence.Builder()
+					.setRange(8).setRepeatDistance(mTestDistance)
+					.setRepeatRatio(0.3);
+			mImageSeq = builder.build();
 		}
 
-		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				mImageSeq, mGraphUI);
+		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer, mImageSeq,
+				mGraphUI);
 		mImageGame.setId(1);
 		mImageGame.setTestTimes(mTotalTestCount);
 
 		if (mAudioSeq == null) {
-    		RandomSequence.Builder builder2 = new RandomSequence.Builder()
-    				.setRange(7).setRepeatDistance(mTestDistance)
-    				.setRepeatRatio(0.3);
-    		mAudioSeq = builder2.build();
+			RandomSequence.Builder builder2 = new RandomSequence.Builder()
+					.setRange(7).setRepeatDistance(mTestDistance)
+					.setRepeatRatio(0.3);
+			mAudioSeq = builder2.build();
 		}
-		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer,
-				mAudioSeq, mAudioGameUI);
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer, mAudioSeq,
+				mAudioGameUI);
 		mAudioGame.setId(2);
 		mAudioGame.setTestTimes(mTotalTestCount);
 
 		mTotalProgressContent = "total " + mTotalTestCount;
 		mTotalProgress.setText(mTotalProgressContent);
 		mProgressBar.setMax(mTotalTestCount);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putIntegerArrayList(STATE_KEY_TEST_TOTAL, mTestTotalCounts);
+		outState.putIntegerArrayList(STATE_KEY_TEST_CORRECT, mTestCorrectCounts);
 	}
 
 	@SuppressWarnings("unused")
@@ -524,7 +560,9 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	/**
 	 * notifiy game end
-	 * @param type 1 for image, 2 for graph
+	 * 
+	 * @param type
+	 *            1 for image, 2 for graph
 	 */
 	void onGameEnd(int type) {
 		mEndedGameFlag = (mEndedGameFlag | type);
@@ -534,7 +572,21 @@ public class GameActivity extends Activity implements OnClickListener {
 			if (a[0] == a[1] && b[0] == b[1]) {
 				Toast.makeText(this, "good", Toast.LENGTH_LONG).show();
 			}
+			mTestTotalCounts.add(a[1] + b[1]);
+			mTestCorrectCounts.add(a[0] + b[0]);
+			if (BuildConfig.DEBUG) {
+				Log.d(TAG, "current summary:");
+				Log.d(TAG, "mTestTotalCounts " + mTestTotalCounts.toString());
+				Log.d(TAG, "mTestCor" + mTestCorrectCounts.toString());
+			}
 		}
 	}
+
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent();
+		finish();
+	}
+
 	private int mEndedGameFlag = 0;
 }
