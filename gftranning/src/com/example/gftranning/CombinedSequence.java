@@ -26,6 +26,8 @@ public class CombinedSequence {
 		return result;
 	}
 
+	
+
 	private static final int DEFAULT = 0;
 	private static final int MATCH_IMAGE = 1;
 	private static final int MATCH_AUDIO = 2;
@@ -129,6 +131,9 @@ public class CombinedSequence {
 	 */
 	private void generateEasy(ArrayList<Pair<Integer, Integer>> result,
 			int distance, int testTime, int video, int audio) {
+		// first create a sequence without match
+		// then create some match case
+		initRandomSequence(result, distance, testTime, video, audio);
 		final int eachTestLength = distance + 1 + 1;
 		final int totalDisplayNum = 1 + distance + testTime;
 		final int maxAssignedMatchCount = (totalDisplayNum - 1)
@@ -143,6 +148,9 @@ public class CombinedSequence {
 
 		for (int i = 0; i < assignedMatchCount; ++i) {
 			offset += mRandom.nextInt(freeCount);
+			Object target = result.get(offset + distance + 1);
+			result.remove(offset);
+			result.add(offset, (Pair<Integer, Integer>) target);
 		}
 	}
 
