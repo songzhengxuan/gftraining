@@ -9,5 +9,11 @@
     <string name="image_description">TODO</string>
     <string name="audio_match">audio_match</string>
     <string name="ready">Ready?</string>
+    <string name="n_back">\?-back</string>
+    <string name="test_time">test time</string>
+    <string name="test_serial_count">test serial count</string>
+    <string name="begin">begin</string>
+    <string name="test_distance">test distance</string>
+    <string name="serial_game_count">serial game count</string>
 
 </resources>

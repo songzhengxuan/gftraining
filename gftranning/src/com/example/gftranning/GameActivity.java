@@ -37,6 +37,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	public static final String RESULT_KEY_TEST_END_TIME_MILLIS = "start_time_millis";
 	public static final int MODE_QUICKGAME = 0;
 	public static final int MODE_CAREER = 1;
+	public static final int MODE_SERIAL_GAME = 2;
 
 	Handler mHandler;
 
@@ -584,8 +585,15 @@ public class GameActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent();
-		finish();
+		if (mEndedGameFlag == 3 && mMode == MODE_SERIAL_GAME) {
+			Intent intent = new Intent();
+			intent.putExtra(RESULT_KEY_TEST_TOTAL, mTestTotalCounts);
+			intent.putExtra(RESULT_KEY_TEST_CORRECT, mTestCorrectCounts);
+			setResult(RESULT_OK, intent);
+			finishActivity(MODE_SERIAL_GAME);
+		} else {
+			setResult(RESULT_CANCELED);
+		}
 	}
 
 	private int mEndedGameFlag = 0;

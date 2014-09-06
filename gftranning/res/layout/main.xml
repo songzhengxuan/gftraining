@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="#ffffff"
     android:orientation="vertical" >
 
     <TextView
@@ -9,7 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="Test Game" />
+        android:text="Test Game"
+        android:visibility="invisible" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -40,5 +42,14 @@
             android:inputType="number"
             android:singleLine="true" />
     </LinearLayout>
+
+    <include
+        android:id="@+id/serial_game_layout_ref"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        layout="@layout/serial_game_layout"
+        android:background="#ffffff" />
 
 </LinearLayout>
