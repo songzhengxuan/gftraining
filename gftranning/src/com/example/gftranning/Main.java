@@ -63,10 +63,10 @@ public class Main extends Activity {
 				Intent intent = new Intent(Main.this, GameActivity.class);
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_COUNT, testCount);
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_DISTANCE, distance);
-
+				intent.putExtra(GameActivity.EXTRA_INT_MODE, GameActivity.MODE_SERIAL_GAME);
 			}
 		});
-		
+
 		if (mSerialGameControll != null) {
 			Bundle data = savedInstanceState != null ? savedInstanceState.getBundle(STATE_KEY_SERIAL_GAME_CONTROL_DATA)
 					: null;

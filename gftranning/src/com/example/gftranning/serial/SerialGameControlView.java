@@ -26,10 +26,6 @@ public class SerialGameControlView implements OnScrollListener {
 	private ViewGroup mGameConfigLayout;
 	private ViewGroup mGameProgressLayout;
 
-	private int mTestDistance;
-	private int mTestNumber;
-	private int mGameCount;
-
 	private INewGameStartAction mNewGameStarter;
 
 	public void findAllViews(Activity hostActivity) {
@@ -50,8 +46,8 @@ public class SerialGameControlView implements OnScrollListener {
 
 			@Override
 			public void onClick(View arg0) {
-				if (mState == GameState.GameEnd) {
-					mNewGameStarter.startNewGame(getUserSetGameCount(), getUserSetTestDistance());
+				if (mState == GameState.NewGame) {
+					mNewGameStarter.startNewGame(getUserSetTestNumber(), getUserSetTestDistance());
 				}
 			}
 		});
@@ -87,27 +83,27 @@ public class SerialGameControlView implements OnScrollListener {
 	}
 
 	public int getUserSetTestDistance() {
-		return mTestDistance;
+		return mTestDistancePicker.getValue();
 	}
 
 	public void setTestDistance(int testDistance) {
-		mTestDistance = testDistance;
+		mTestDistancePicker.setValue(testDistance);
 	}
 
 	public int getUserSetTestNumber() {
-		return mTestNumber;
+		return mTestNumberPicker.getValue();
 	}
 
 	public void setTestNumber(int testNumber) {
-		mTestNumber = testNumber;
+		mTestNumberPicker.setValue(testNumber);
 	}
 
 	public int getUserSetGameCount() {
-		return mGameCount;
+		return mGameCountPicker.getValue();
 	}
 
 	public void setGameCount(int gameCount) {
-		mGameCount = gameCount;
+		mGameCountPicker.setValue(gameCount);
 	}
 
 	public void setNewGameStarter(INewGameStartAction starter) {
