@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class GameActivity extends Activity implements OnClickListener {
-	private static final String TAG = null;
+	private static final String TAG = GameActivity.class.getSimpleName();
 
 	public static final String EXTRA_INT_TEST_COUNT = "count";
 
@@ -132,8 +132,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void onGameEnd() {
-			mDebugMsg.addImage("end"
-					+ Arrays.toString(mImageGame.getCorrectRatio()));
+			mDebugMsg.addImage("end" + Arrays.toString(mImageGame.getCorrectRatio()));
 			mHandler.post(mUpdateDebugMsgTask);
 			mProgressBar.setProgress(mTotalTestCount);
 			GameActivity.this.onGameEnd(1);
@@ -152,8 +151,7 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void onAlreadyMarked() {
-			Toast.makeText(getApplicationContext(), "Already",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Already", Toast.LENGTH_SHORT).show();
 			mImageView.setBackgroundColor(Color.RED);
 			mImageMatchButton.startAnimation(mShakeAnimation);
 		}
@@ -168,8 +166,8 @@ public class GameActivity extends Activity implements OnClickListener {
 			if (result < 0 || result > 8) {
 				throw new IllegalArgumentException("invalid result id");
 			}
-			int id = getResources().getIdentifier("image" + (result + 1),
-					"drawable", getBaseContext().getPackageName());
+			int id = getResources()
+					.getIdentifier("image" + (result + 1), "drawable", getBaseContext().getPackageName());
 			if (id == 0) {
 				throw new IllegalStateException("invalid state");
 			}
@@ -178,8 +176,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			if (mImageMatchButton.isEnabled() == isPreparaing) {
 				mImageMatchButton.setEnabled(!isPreparaing);
 			}
-			mTotalProgressContent = mImageGame.getInputSize() + " of total "
-					+ mTotalTestCount;
+			mTotalProgressContent = mImageGame.getInputSize() + " of total " + mTotalTestCount;
 			mTotalProgress.setText(mTotalProgressContent);
 			mProgressBar.setProgress(mImageGame.getInputSize());
 			mImageView.setVisibility(View.VISIBLE);
@@ -222,16 +219,14 @@ public class GameActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void onAlreadyMarked() {
-			Toast.makeText(getApplicationContext(), "Already",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Already", Toast.LENGTH_SHORT).show();
 			mAudioTestText.setBackgroundColor(Color.RED);
 			mAudioMatchButton.startAnimation(mShakeAnimation);
 		}
 
 		@Override
 		public void onGameEnd() {
-			mDebugMsg.addAudio("end"
-					+ Arrays.toString(mAudioGame.getCorrectRatio()));
+			mDebugMsg.addAudio("end" + Arrays.toString(mAudioGame.getCorrectRatio()));
 			mHandler.post(mUpdateDebugMsgTask);
 			GameActivity.this.onGameEnd(2);
 		}
@@ -286,23 +281,19 @@ public class GameActivity extends Activity implements OnClickListener {
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
-		// initFakeSequence();
+		initFakeSequence();
 		initGame();
 
 		mStartTimeMillis = System.currentTimeMillis();
 		if (savedInstanceState != null) {
 			if (savedInstanceState.containsKey(STATE_KEY_TEST_TOTAL)) {
-				mTestTotalCounts = savedInstanceState
-						.getIntegerArrayList(STATE_KEY_TEST_TOTAL);
+				mTestTotalCounts = savedInstanceState.getIntegerArrayList(STATE_KEY_TEST_TOTAL);
 			}
 			if (savedInstanceState.containsKey(STATE_KEY_TEST_CORRECT)) {
-				mTestCorrectCounts = savedInstanceState
-						.getIntegerArrayList(STATE_KEY_TEST_CORRECT);
+				mTestCorrectCounts = savedInstanceState.getIntegerArrayList(STATE_KEY_TEST_CORRECT);
 			}
-			if (savedInstanceState
-					.containsKey(STATE_KEY_TEST_START_TIME_MILLIS)) {
-				mStartTimeMillis = savedInstanceState
-						.getLong(STATE_KEY_TEST_START_TIME_MILLIS);
+			if (savedInstanceState.containsKey(STATE_KEY_TEST_START_TIME_MILLIS)) {
+				mStartTimeMillis = savedInstanceState.getLong(STATE_KEY_TEST_START_TIME_MILLIS);
 			}
 		}
 	}
@@ -336,33 +327,30 @@ public class GameActivity extends Activity implements OnClickListener {
 			mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
 			mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
 		} else if (mMode == MODE_CAREER) {
-			int currentLevel = getIntent().getIntExtra(
-					EXTRA_INT_CARRER_CURRNET_LEVEL, 0);
-			mTotalTestCount = LevelUpComputer.getInstance()
-					.getEachGameTestCount(this, currentLevel);
+			int currentLevel = getIntent().getIntExtra(EXTRA_INT_CARRER_CURRNET_LEVEL, 0);
+			mTotalTestCount = LevelUpComputer.getInstance().getEachGameTestCount(this, currentLevel);
 			mTestDistance = currentLevel;
+		} else if (mMode == MODE_SERIAL_GAME) {
+			mTotalTestCount = getIntent().getIntExtra(EXTRA_INT_TEST_COUNT, 5);
+			mTestDistance = getIntent().getIntExtra(EXTRA_INT_TEST_DISTANCE, 1) - 1;
 		}
 		mGameTimer = new GameTimerAndroidImpl();
 		if (mImageSeq == null) {
-			RandomSequence.Builder builder = new RandomSequence.Builder()
-					.setRange(8).setRepeatDistance(mTestDistance)
+			RandomSequence.Builder builder = new RandomSequence.Builder().setRange(8).setRepeatDistance(mTestDistance)
 					.setRepeatRatio(0.3);
 			mImageSeq = builder.build();
 		}
 
-		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer, mImageSeq,
-				mGraphUI);
+		mImageGame = new Game(300, 2500, mTestDistance, mGameTimer, mImageSeq, mGraphUI);
 		mImageGame.setId(1);
 		mImageGame.setTestTimes(mTotalTestCount);
 
 		if (mAudioSeq == null) {
-			RandomSequence.Builder builder2 = new RandomSequence.Builder()
-					.setRange(7).setRepeatDistance(mTestDistance)
+			RandomSequence.Builder builder2 = new RandomSequence.Builder().setRange(7).setRepeatDistance(mTestDistance)
 					.setRepeatRatio(0.3);
 			mAudioSeq = builder2.build();
 		}
-		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer, mAudioSeq,
-				mAudioGameUI);
+		mAudioGame = new Game(300, 2500, mTestDistance, mGameTimer, mAudioSeq, mAudioGameUI);
 		mAudioGame.setId(2);
 		mAudioGame.setTestTimes(mTotalTestCount);
 
@@ -381,8 +369,7 @@ public class GameActivity extends Activity implements OnClickListener {
 	@SuppressWarnings("unused")
 	private void initFakeSequence() {
 		mImageSeq = new ISequenceSource() {
-			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-					1, 1, 1, };
+			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
 			int pos = 0;
 			int replayStart = -1;
@@ -406,8 +393,7 @@ public class GameActivity extends Activity implements OnClickListener {
 			}
 		};
 		mAudioSeq = new ISequenceSource() {
-			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-					1, 1, 1, };
+			int[] seqs = new int[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
 			int pos = 0;
 			int replayStart = -1;
@@ -509,13 +495,13 @@ public class GameActivity extends Activity implements OnClickListener {
 		}
 
 		void initAnimations(GameActivity testGameActivity2) {
-			testGameActivity2.mReadyScalInAnimation = AnimationUtils
-					.loadAnimation(testGameActivity2, R.anim.ready_scale_in);
+			testGameActivity2.mReadyScalInAnimation = AnimationUtils.loadAnimation(testGameActivity2,
+					R.anim.ready_scale_in);
 
 			testGameActivity2.mReadyScalInAnimation.setAnimationListener(this);
 
-			testGameActivity2.mNumberScleInAnimation = AnimationUtils
-					.loadAnimation(testGameActivity2, R.anim.number_scale_in);
+			testGameActivity2.mNumberScleInAnimation = AnimationUtils.loadAnimation(testGameActivity2,
+					R.anim.number_scale_in);
 			testGameActivity2.mNumberScleInAnimation.setAnimationListener(this);
 
 			testGameActivity2.mGoScalOutAnimation = AnimationUtils
@@ -590,9 +576,10 @@ public class GameActivity extends Activity implements OnClickListener {
 			intent.putExtra(RESULT_KEY_TEST_TOTAL, mTestTotalCounts);
 			intent.putExtra(RESULT_KEY_TEST_CORRECT, mTestCorrectCounts);
 			setResult(RESULT_OK, intent);
-			finishActivity(MODE_SERIAL_GAME);
+			finish();
 		} else {
 			setResult(RESULT_CANCELED);
+			finish();
 		}
 	}
 

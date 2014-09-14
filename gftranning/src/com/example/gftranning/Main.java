@@ -1,15 +1,15 @@
 package com.example.gftranning;
 
-import com.example.gftranning.serial.SerialGameControlView;
-import com.example.gftranning.serial.SerialGameControlView.INewGameStartAction;
-import com.example.gftranning.serial.SerialGameController;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import com.example.gftranning.serial.SerialGameControlView;
+import com.example.gftranning.serial.SerialGameControlView.INewGameStartAction;
+import com.example.gftranning.serial.SerialGameController;
 
 public class Main extends Activity {
 	private static final String STATE_KEY_SERIAL_GAME_CONTROL_DATA = "g_ctrl_data";
@@ -64,6 +64,7 @@ public class Main extends Activity {
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_COUNT, testCount);
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_DISTANCE, distance);
 				intent.putExtra(GameActivity.EXTRA_INT_MODE, GameActivity.MODE_SERIAL_GAME);
+				startActivityForResult(intent, START_REQ_SERIAL_GAME);
 			}
 		});
 

@@ -72,10 +72,24 @@
         android:id="@+id/game_progress_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="#ff0000"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/tv_serial_game_progress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/game_result_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#00ff00"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_serial_game_result"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
