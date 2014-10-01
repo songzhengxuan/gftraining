@@ -66,14 +66,15 @@ public class SerialGameControlView implements OnScrollListener {
 				if (state == GameState.NewGame) {
 					state = GameState.InGame;
 					boolean oldAutoUpdateFlag = mController.setAutoUIUpdate(false);
-
 					mController.setTestDistance(getUserSetTestDistance());
 					mController.setSerialGameTotal(getUserSetGameCount());
 					mController.setSerialGameProgress(0);
 					mController.setAutoUIUpdate(oldAutoUpdateFlag);
-				}
-				if (state == GameState.InGame) {
 					mNewGameStarter.startNewGame(getUserSetTestNumber(), getUserSetTestDistance());
+				} else if (state == GameState.InGame) {
+					mNewGameStarter.startNewGame(getUserSetTestNumber(), getUserSetTestDistance());
+				} else if (state == GameState.GameEnd) {
+					state = GameState.NewGame;
 				}
 				mController.setCurrentState(mContext, state);
 			}
@@ -101,10 +102,13 @@ public class SerialGameControlView implements OnScrollListener {
 			mGameResultLayout.setVisibility(View.GONE);
 			mTestNumberPicker.setMinValue(1);
 			mTestNumberPicker.setMaxValue(controller.getMaxTestTimeInEachTest());
+			mTestNumberPicker.setValue(controller.getTestTimeInEachTest());
 			mTestDistancePicker.setMinValue(1);
 			mTestDistancePicker.setMaxValue(controller.getMaxTestDistance());
+			mTestDistancePicker.setValue(controller.getTestDistance());
 			mGameCountPicker.setMinValue(1);
 			mGameCountPicker.setMaxValue(controller.getSerialGameMaxTotal());
+			mGameCountPicker.setValue(controller.getSerialGameTotal());
 			break;
 		case InGame:
 			mGameConfigLayout.setVisibility(View.GONE);
@@ -126,6 +130,7 @@ public class SerialGameControlView implements OnScrollListener {
 			}
 			mResultTextView.setText("" + mController.getTotalCorrectTimeInSerial() + "/"
 					+ mController.getTotalTestTimeInSerial());
+			mBeginGameButton.setText(R.string.start_new_game);
 			break;
 		default:
 			break;

@@ -2,12 +2,14 @@ package com.example.gftranning.serial;
 
 import java.util.ArrayList;
 
-import com.example.gftranning.GameActivity;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+
+import com.example.gftranning.GameActivity;
 
 /**
  * onCreate and onActivityResult, which come first

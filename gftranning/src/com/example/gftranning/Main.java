@@ -2,7 +2,10 @@ package com.example.gftranning;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +21,9 @@ public class Main extends Activity {
 
 	private static final int START_REQ_SERIAL_GAME = 0;
 	protected static final String TAG = Main.class.getSimpleName();
+	private static final String SP_KEY_GAME_TOTAL = "game_total";
+	private static final String SP_KEY_EACH_TEST_TIME = "each_test_time";
+	private static final String SP_KEY_TEST_DISTANCE = "test_distance";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,13 @@ public class Main extends Activity {
 				if (BuildConfig.DEBUG) {
 					Log.d(TAG, "startNewGame with " + testCount + "," + distance);
 				}
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(Main.this);
+				Editor editor = sp.edit();
+				editor.putInt(SP_KEY_GAME_TOTAL, mSerialGameControll.getSerialGameTotal());
+				editor.putInt(SP_KEY_EACH_TEST_TIME, mSerialGameControll.getTestTimeInEachTest());
+				editor.putInt(SP_KEY_TEST_DISTANCE, mSerialGameControll.getTestDistance());
+				editor.commit();
+
 				Intent intent = new Intent(Main.this, GameActivity.class);
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_COUNT, testCount);
 				intent.putExtra(GameActivity.EXTRA_INT_TEST_DISTANCE, distance);
@@ -69,9 +82,18 @@ public class Main extends Activity {
 		});
 
 		if (mSerialGameControll != null) {
-			Bundle data = savedInstanceState != null ? savedInstanceState.getBundle(STATE_KEY_SERIAL_GAME_CONTROL_DATA)
-					: null;
-			mSerialGameControll.setCurrentStateData(this, savedInstanceState);
+			if (savedInstanceState != null) {
+				mSerialGameControll.setCurrentStateData(this, savedInstanceState);
+			} else {
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+				int serialGameTotal = sp.getInt(SP_KEY_GAME_TOTAL, 3);
+				int testTimeInEachTest = sp.getInt(SP_KEY_EACH_TEST_TIME, 5);
+				int testDistance = sp.getInt(SP_KEY_TEST_DISTANCE, 1);
+				mSerialGameControll.setCurrentStateData(this, null);
+				mSerialGameControll.setTestDistance(testDistance);
+				mSerialGameControll.setTestTimeInEachTest(testTimeInEachTest);
+				mSerialGameControll.setSerialGameTotal(serialGameTotal);
+			}
 		}
 	}
 

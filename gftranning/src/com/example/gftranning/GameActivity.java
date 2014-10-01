@@ -1,5 +1,6 @@
 package com.example.gftranning;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -281,7 +283,10 @@ public class GameActivity extends Activity implements OnClickListener {
 		mAudioTestText = (TextView) findViewById(R.id.test_audio);
 
 		init();
-		initFakeSequence();
+		File testFlagFile = new File(Environment.getExternalStorageDirectory(), "test");
+		if (testFlagFile.isFile()) {
+			initFakeSequence();
+		}
 		initGame();
 
 		mStartTimeMillis = System.currentTimeMillis();
