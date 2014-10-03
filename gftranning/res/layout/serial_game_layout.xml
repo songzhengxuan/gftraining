@@ -72,13 +72,44 @@
         android:id="@+id/game_progress_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#ff0000"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/tv_serial_game_progress"
+        <ProgressBar
+            android:id="@+id/progress_serial_game_progress"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/corrects_tests" />
+
+            <TextView
+                android:id="@+id/tv_serial_game_score_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/games_total" />
+
+            <TextView
+                android:id="@+id/tv_serial_game_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

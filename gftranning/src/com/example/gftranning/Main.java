@@ -31,6 +31,7 @@ public class Main extends Activity {
 		setContentView(R.layout.main);
 
 		View v1 = findViewById(R.id.text1);
+		
 		v1.setOnClickListener(new View.OnClickListener() {
 
 			@Override

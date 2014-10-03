@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.NumberPicker.OnScrollListener;
 import android.widget.TextView;
 
@@ -30,7 +31,9 @@ public class SerialGameControlView implements OnScrollListener {
 	private NumberPicker mGameCountPicker;
 	private Set<NumberPicker> mIdleNumberPicker = new HashSet<NumberPicker>();
 	private Button mBeginGameButton;
-	private TextView mProgressTextView;
+	private ProgressBar mProgressBar;
+	private TextView mScoreProgressTextView;
+	private TextView mGameProgressTextView;
 	private TextView mResultTextView;
 
 	private ViewGroup mGameConfigLayout;
@@ -44,7 +47,9 @@ public class SerialGameControlView implements OnScrollListener {
 		mGameConfigLayout = (ViewGroup) hostActivity.findViewById(R.id.game_config_layout);
 		mGameProgressLayout = (ViewGroup) hostActivity.findViewById(R.id.game_progress_layout);
 		mGameResultLayout = (ViewGroup) hostActivity.findViewById(R.id.game_result_layout);
-		mProgressTextView = (TextView) hostActivity.findViewById(R.id.tv_serial_game_progress);
+		mProgressBar = (ProgressBar) hostActivity.findViewById(R.id.progress_serial_game_progress);
+		mScoreProgressTextView = (TextView) hostActivity.findViewById(R.id.tv_serial_game_score_progress);
+		mGameProgressTextView = (TextView) hostActivity.findViewById(R.id.tv_serial_game_progress);
 		mResultTextView = (TextView) hostActivity.findViewById(R.id.tv_serial_game_result);
 
 		mTestNumberPicker = (NumberPicker) hostActivity.findViewById(R.id.test_number_picker);
@@ -68,15 +73,18 @@ public class SerialGameControlView implements OnScrollListener {
 					boolean oldAutoUpdateFlag = mController.setAutoUIUpdate(false);
 					mController.setTestDistance(getUserSetTestDistance());
 					mController.setSerialGameTotal(getUserSetGameCount());
+					mController.setTestTimeInEachTest(getUserSetTestNumber());
 					mController.setSerialGameProgress(0);
+					mController.setCurrentState(mContext, state);
 					mController.setAutoUIUpdate(oldAutoUpdateFlag);
 					mNewGameStarter.startNewGame(getUserSetTestNumber(), getUserSetTestDistance());
 				} else if (state == GameState.InGame) {
+					mController.setCurrentState(mContext, state);
 					mNewGameStarter.startNewGame(getUserSetTestNumber(), getUserSetTestDistance());
 				} else if (state == GameState.GameEnd) {
 					state = GameState.NewGame;
+					mController.setCurrentState(mContext, state);
 				}
-				mController.setCurrentState(mContext, state);
 			}
 		});
 	}
@@ -118,7 +126,13 @@ public class SerialGameControlView implements OnScrollListener {
 				Log.d(TAG, "progress and total is " + mController.getSerialProgress());
 				Log.d(TAG, "progress and total is " + mController.getSerialGameTotal());
 			}
-			mProgressTextView.setText("" + mController.getSerialProgress() + "/" + mController.getSerialGameTotal());
+			mGameProgressTextView
+					.setText("" + mController.getSerialProgress() + "/" + mController.getSerialGameTotal());
+			mScoreProgressTextView.setText("" + mController.getTotalCorrectTimeInSerial() + "/"
+					+ mController.getTotalTestTimeInSerial());
+			mProgressBar.setMax(mController.getSerialGameTotal() * mController.getTestTimeInEachTest() * 2);
+			mProgressBar.setSecondaryProgress(mController.getTotalTestTimeInSerial());
+			mProgressBar.setProgress(mController.getTotalCorrectTimeInSerial());
 			break;
 		case GameEnd:
 			mGameConfigLayout.setVisibility(View.GONE);
