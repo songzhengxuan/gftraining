@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.gftranning.highscore.ScoreProvider;
 import com.example.gftranning.serial.SerialGameControlView;
 import com.example.gftranning.serial.SerialGameControlView.INewGameStartAction;
 import com.example.gftranning.serial.SerialGameController;
@@ -29,6 +31,9 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		if (BuildConfig.DEBUG) {
+			Cursor cursor = getContentResolver().query(ScoreProvider.CONTENT_URI, null, null, null, null);
+		}
 
 		View v1 = findViewById(R.id.text1);
 

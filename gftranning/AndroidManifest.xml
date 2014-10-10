@@ -34,6 +34,11 @@
             android:process=":crashhandler"
             android:taskAffinity=":CrashInfo" >
         </activity>
+
+        <provider
+            android:name="com.example.gftranning.highscore.ScoreProvider"
+            android:authorities="com.example.gftranning.score"
+            android:exported="false" />
     </application>
 
 </manifest>
