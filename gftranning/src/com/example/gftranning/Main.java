@@ -31,7 +31,7 @@ public class Main extends Activity {
 		setContentView(R.layout.main);
 
 		View v1 = findViewById(R.id.text1);
-		
+
 		v1.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -84,7 +84,8 @@ public class Main extends Activity {
 
 		if (mSerialGameControll != null) {
 			if (savedInstanceState != null) {
-				mSerialGameControll.setCurrentStateData(this, savedInstanceState);
+				mSerialGameControll.setCurrentStateData(this,
+						savedInstanceState.getBundle(STATE_KEY_SERIAL_GAME_CONTROL_DATA));
 			} else {
 				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 				int serialGameTotal = sp.getInt(SP_KEY_GAME_TOTAL, 3);
