@@ -1,6 +1,7 @@
 package com.example.gftranning;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.gftranning.highscore.DatabaseContract;
 import com.example.gftranning.highscore.ScoreProvider;
 import com.example.gftranning.serial.SerialGameControlView;
 import com.example.gftranning.serial.SerialGameControlView.INewGameStartAction;
@@ -32,6 +34,11 @@ public class Main extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		if (BuildConfig.DEBUG) {
+			ContentValues values = new ContentValues();
+			values.put(DatabaseContract.HighScore.HIGH_SCORE_CORRECT, 48);
+			values.put(DatabaseContract.HighScore.HIGH_SCORE_TOTAL, 50);
+			values.put(DatabaseContract.HighScore.HIGH_SCORE_DATE, "20141013");
+			getContentResolver().insert(DatabaseContract.HighScore.CONTENT_URI, values);
 			Cursor cursor = getContentResolver().query(ScoreProvider.CONTENT_URI, null, null, null, null);
 		}
 

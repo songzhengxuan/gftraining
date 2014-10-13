@@ -1,22 +1,22 @@
 package com.example.gftranning.highscore;
 
-import com.example.gftranning.GFTApplication;
-import com.example.gftranning.highscore.DatabaseContract.HighScore;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.gftranning.GFTApplication;
+
 public class ScoreProvider extends ContentProvider {
-	public static final String AUTHORITY = "content://" + GFTApplication.PKGNAME + ".score";
+	public static final String AUTHORITY = GFTApplication.PKGNAME + ".score";
 	private static final String TAG = ScoreProvider.class.getSimpleName();
 	public static final Uri CONTENT_URI = Uri.parse(AUTHORITY);
 	private static final int DB_VER = 1;
@@ -58,8 +58,21 @@ public class ScoreProvider extends ContentProvider {
 	}
 
 	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) {
-		// TODO Auto-generated method stub
+	public Uri insert(Uri uri, ContentValues values) {
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		long id = -1;
+		switch (sUriMatcher.match(uri)) {
+		case HIGH_SCORE_DIRECTORY:
+			id = db.insert(DatabaseContract.HighScore.TABLE_NAME, null, values);
+			break;
+		default:
+			throw new IllegalArgumentException("unsupported inert");
+		}
+		if (id != -1) {
+			uri = uri.buildUpon().appendPath("" + id).build();
+			getContext().getContentResolver().notifyChange(uri, null);
+			return uri;
+		}
 		return null;
 	}
 
@@ -70,22 +83,32 @@ public class ScoreProvider extends ContentProvider {
 	}
 
 	@Override
-	public Cursor query(Uri uri, String[] projections, String selections, String[] selectionArg, String order) {
+	public Cursor query(Uri uri, String[] projectionIn, String selection, String[] selectionArgs, String order) {
 
 		Log.d(TAG, "query called");
-		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		switch (sUriMatcher.match(uri)) {
 		case HIGH_SCORE_DIRECTORY:
 			Log.d(TAG, "query called directory");
-
+			queryBuilder.setTables(DatabaseContract.HighScore.TABLE_NAME);
+			queryBuilder.setProjectionMap(DatabaseContract.HighScore.sProjectionMap);
 			break;
 		case HIGH_SCORE_ID:
+			Log.d(TAG, "query called id");
+			queryBuilder.setTables(DatabaseContract.HighScore.TABLE_NAME);
+			queryBuilder.setProjectionMap(DatabaseContract.HighScore.sProjectionMap);
+			String id = uri.getLastPathSegment();
+			queryBuilder.appendWhere(BaseColumns._ID + "=" + id);
 			break;
-
 		default:
-			break;
+			throw new IllegalArgumentException("unsupported inert");
 		}
-		return null;
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+		Cursor cursor = queryBuilder.query(db, projectionIn, selection, selectionArgs, null, null, order);
+		if (cursor != null) {
+			cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		}
+		return cursor;
 	}
 
 	@Override
