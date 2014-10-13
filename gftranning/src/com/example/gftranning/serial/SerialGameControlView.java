@@ -85,6 +85,9 @@ public class SerialGameControlView implements OnScrollListener {
 					state = GameState.NewGame;
 					mController.setCurrentState(mContext, state);
 				}
+				boolean old = mController.setAutoUIUpdate(false);
+				mController.setCurrentState(mContext, state);
+				mController.setAutoUIUpdate(old);
 			}
 		});
 	}
